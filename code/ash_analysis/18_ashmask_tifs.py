@@ -2,7 +2,7 @@
 """STEP 18: Export the ash masks as GeoTIFFs for visual QC in a GIS.
 For each eruption bracket, saves strict (production) and moderate masks:
 1 = ash, 0 = clean glacier, nodata(255) = off-glacier. EPSG:32657, 30 m."""
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis")
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis")
 import glob, numpy as np, rasterio, rasterio.features, geopandas as gpd
 from datetime import date
 from pathlib import Path
@@ -11,7 +11,7 @@ from s2_util import ndsi_bright
 
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation/ash_analysis")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
 crs="EPSG:32657"; RES=30.0
 BRACKETS=[("2019_Oct","2019-09-27","2020-09-02",date(2019,10,25)),
           ("2020_Dec","2020-09-24","2021-08-31",date(2020,12,9)),

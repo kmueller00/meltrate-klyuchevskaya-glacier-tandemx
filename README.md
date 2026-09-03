@@ -1,6 +1,6 @@
 # Klyuchevskaya Glacier — Volcanic Eruption Impact on Glacier Elevation (TanDEM-X)
 
-**📄 [Read the full findings report](docs/index.html)** — or browse the source directly: [`prc07_overview_out/RESULTS_presentation/SUMMARY_findings.html`](prc07_overview_out/RESULTS_presentation/SUMMARY_findings.html).
+**📄 [Read the full findings report, live](https://kmueller00.github.io/meltrate-klyuchevskaya-glacier-tandemx/)** — or browse the source directly: [`prc07_overview_out/RESULTS_presentation/SUMMARY_findings.html`](prc07_overview_out/RESULTS_presentation/SUMMARY_findings.html).
 
 ## TL;DR
 
@@ -19,9 +19,10 @@ Full methodology, all figures, per-eruption breakdowns, and known limitations ar
 
 This mirrors the actual working directory used to run the analysis (all scripts use absolute local paths to the source DEM archive and outputs — this is a working research repo, not a portable package; re-running anything requires the original TanDEM-X archive and matching local paths).
 
-- **`ash_analysis/`** — the eruption/ash-deposition pipeline, numbered scripts `01`–`34` run roughly in order: acquisition matching → ash mask generation → per-eruption deposition/melt statistics → hotspot/coldspot/hypsometric spatial analysis → the within-season melt curve and surge-delineation checks. `s2_util.py` is the shared Sentinel-2/Landsat fetch utility.
-- **Top-level `.py` scripts** — the broader elevation-change pipeline: full-archive robust rate maps (`dH_robust_all.py`), coregistration diagnostics, yearly/seasonal rate tifs, and presentation-figure generators.
-- **`prc07_overview_out/RESULTS_presentation/`** — every figure (PNG), statistics table (CSV), and the flagship `SUMMARY_findings.html` report itself. `ash_analysis/` and `SUMMARY_figures_fullres/` subfolders hold eruption-specific and full-resolution copies respectively.
+- **`code/`** — all analysis code.
+  - **`code/ash_analysis/`** — the eruption/ash-deposition pipeline, numbered scripts `01`–`34` run roughly in order: acquisition matching → ash mask generation → per-eruption deposition/melt statistics → hotspot/coldspot/hypsometric spatial analysis → the within-season melt curve and surge-delineation checks. `s2_util.py` is the shared Sentinel-2/Landsat fetch utility.
+  - **`code/*.py`** — the broader elevation-change pipeline: full-archive robust rate maps (`dH_robust_all.py`), coregistration diagnostics, yearly/seasonal rate tifs, and presentation-figure generators.
+- **`prc07_overview_out/RESULTS_presentation/`** — every figure (PNG), statistics table (CSV), and the flagship `SUMMARY_findings.html` report itself. `ash_analysis/` and `SUMMARY_figures_fullres/` subfolders hold eruption-specific and full-resolution copies respectively. This stays at the repo root rather than under `code/` — it's this project's *output*, not its code, and it's also the exact path every script writes to, so keeping it separate from `code/` avoids the two ever being confused.
 - **`docs/index.html`** — a copy of the report, present only so GitHub Pages can serve it as a live page.
 
 Raw DEM rasters (`.tif`) are excluded from version control (see `.gitignore`) — they're large, fully regenerable from the scripts against the source archive, and not needed to read or understand the findings.

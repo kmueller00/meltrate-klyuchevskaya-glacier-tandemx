@@ -29,7 +29,7 @@ warnings.filterwarnings("ignore")
 
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
 crs="EPSG:32657"; RES=30.0
 ERUPT=[(2019.8,"2019 Oct",0),(2020.94,"2020 Dec",0),(2022.9,"2022 Nov",0),
        (2023.83,"2023 paroxysm",1),(2024.6,"2024",0),(2015.05,"2015",1)]

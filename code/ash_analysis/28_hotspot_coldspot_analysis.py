@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis"); import _style
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis"); import _style
 """
 STEP 28: Where exactly is melt largest/smallest, and what explains it there?
 
@@ -50,7 +50,7 @@ import csv, warnings
 warnings.filterwarnings("ignore")
 
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
 RATE_TIF=AOUT/"summer_trend_rate_glacieronly.tif"
 BASELINE_TIF=AOUT/"summer_trend_baseline_years.tif"
 MIN_BASELINE_YR=10.0   # hotspot/coldspot ranking restricted to long-baseline pixels

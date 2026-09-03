@@ -6,7 +6,7 @@ STEP 11: Per-eruption depiction. One 3-panel figure per eruption:
   [3] boxplot ash vs clean dH, with the bootstrap D and significance annotated
 Uses the SAME snow-free summer brackets and ash logic as steps 8/10.
 """
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis")
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis")
 import glob, numpy as np, rasterio, rasterio.features, geopandas as gpd
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from datetime import date, timedelta
@@ -17,7 +17,7 @@ from s2_util import ndsi_bright as _ndsi_bright_shared
 
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation/ash_analysis")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")  # main massif only (southern tongue-only glaciers excluded)
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")  # main massif only (southern tongue-only glaciers excluded)
 crs="EPSG:32657"; RES=30.0
 rng=np.random.default_rng(7)
 

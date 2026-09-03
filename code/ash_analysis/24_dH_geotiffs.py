@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis"); import _style
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis"); import _style
 """STEP 24: Export the per-eruption dH (elevation-change) rasters as GeoTIFFs.
 One float32 GeoTIFF per eruption bracket, glacier-masked, de-biased, on the same
 grid as the ASHMASK/S2 tifs (pixel-perfect stack in QGIS). nodata=-9999."""
@@ -9,7 +9,7 @@ from rasterio.warp import reproject, Resampling
 
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation/ash_analysis")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
 crs="EPSG:32657"
 
 BRACKETS=[("2019_Oct","2019-09-27","2020-09-02"),("2020_Dec","2020-09-24","2021-08-31"),

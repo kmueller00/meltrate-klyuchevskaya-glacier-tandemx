@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis"); import _style
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis"); import _style
 """
 STEP 32: Per-pixel LINEAR TREND rate (replaces the rigid early/late two-bucket
 median-difference in dH_robust_all.py's summer rate for spatial analyses).
@@ -39,7 +39,7 @@ warnings.filterwarnings("ignore")
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 OUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out")
 AOUT=OUT/"RESULTS_presentation"
-GLINV_MAIN=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")
+GLINV_MAIN=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
 crs="EPSG:32657"; RES=30.0
 FULL_FOOTPRINT_REF=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b/"
     "2024/2024-09-04_065957_TDT_SM_A_95512_155_0045_HH./prc07/DEM_FNL_2024-09-04_065957_0-030m00_155_0045_HH..tif")

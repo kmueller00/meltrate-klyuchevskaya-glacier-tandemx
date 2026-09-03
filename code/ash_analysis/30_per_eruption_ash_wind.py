@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis"); import _style
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis"); import _style
 """
 STEP 30: Per-eruption (not unioned) ash-cover-by-aspect test against ERA5 wind.
 
@@ -35,7 +35,7 @@ import glob, csv, json, urllib.request, urllib.parse, warnings
 warnings.filterwarnings("ignore")
 
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
 RATE_TIF=AOUT/"summer_robust_rate_glacieronly.tif"
 crs="EPSG:32657"; RES=30.0
 LAT,LON=56.06,160.63

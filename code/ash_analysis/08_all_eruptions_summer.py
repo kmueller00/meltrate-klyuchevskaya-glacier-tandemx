@@ -21,7 +21,7 @@ the anchor date rather than the ~2 months used everywhere else -- a real, wider
 temporal smear than the other eruptions get, noted here and in the report rather
 than silently matching the tighter default.
 """
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis")
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis")
 import glob, numpy as np, rasterio, rasterio.features, geopandas as gpd
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from datetime import date
@@ -32,7 +32,7 @@ from s2_util import ndsi_bright
 
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation/ash_analysis")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")  # main massif only (southern tongue-only glaciers excluded)
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")  # main massif only (southern tongue-only glaciers excluded)
 crs="EPSG:32657"; RES=30.0
 
 # eruption -> (pre-summer DEM, post-summer DEM, has_ash_source, eruption date, source, wide_days)

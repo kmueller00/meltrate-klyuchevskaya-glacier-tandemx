@@ -29,7 +29,7 @@ AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/
 GLINV=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b/"
            "2025/2025-01-14_065954_TDT_SM_A_97516_155_0045+1-2/prc05_refdem/"
            "GLINV_rgi06_ttl_utm57_N_b_UTM.shp")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")  # OVERRIDE: main massif only (southern tongue-only glaciers excluded)
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")  # OVERRIDE: main massif only (southern tongue-only glaciers excluded)
 crs="EPSG:32657"; RES=30.0; BBOX=[159.889,55.472,161.359,56.522]
 PRE="2023-09-29"; POST="2024-09-04"   # snow-free summer bracket around Nov-2023 paroxysm
 CAT=pystac_client.Client.open('https://planetarycomputer.microsoft.com/api/stac/v1',

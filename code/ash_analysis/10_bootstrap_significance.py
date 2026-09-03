@@ -10,7 +10,7 @@ neighbouring 30 m pixels are spatially correlated, we ALSO report a block/effect
 -N bootstrap (coarsen ash & clean to ~5-px blocks) so the CI isn't over-narrowed by
 pseudo-replication. Emits a forest-plot of D +/- CI per eruption.
 """
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis")
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis")
 import glob, numpy as np, rasterio, rasterio.features, geopandas as gpd
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from datetime import date
@@ -21,7 +21,7 @@ from s2_util import ndsi_bright
 
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation/ash_analysis")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")  # main massif only (southern tongue-only glaciers excluded)
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")  # main massif only (southern tongue-only glaciers excluded)
 crs="EPSG:32657"; RES=30.0
 NB=2000; rng=np.random.default_rng(42)
 

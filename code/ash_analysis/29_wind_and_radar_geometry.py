@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis"); import _style
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis"); import _style
 """
 STEP 29: Two alternative explanations for the hotspot/coldspot pattern, tested
 directly against data rather than argued from theory.
@@ -31,7 +31,7 @@ import glob, csv, warnings
 warnings.filterwarnings("ignore")
 
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
 RATE_TIF=AOUT/"summer_robust_rate_glacieronly.tif"
 ASH_TIFS=[AOUT/"ash_analysis/ASHMASK_2019_Oct_moderate.tif",
           AOUT/"ash_analysis/ASHMASK_2020_Dec_moderate.tif",

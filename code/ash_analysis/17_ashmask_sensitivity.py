@@ -11,7 +11,7 @@ kills small patches). Here we compare three settings on the 2023 paroxysm and
 If the anomaly is stable across settings, the finding is threshold-robust and
 the larger 'moderate' mask is defensible as the new default.
 """
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis")
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis")
 import glob, numpy as np, rasterio, rasterio.features, geopandas as gpd
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from datetime import date
@@ -22,7 +22,7 @@ from s2_util import ndsi_bright
 
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation/ash_analysis")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
 crs="EPSG:32657"; RES=30.0
 BRACKETS=[("2023 PAROXYSM","2023-09-29","2024-09-04",date(2023,11,1)),
           ("2022 Nov","2022-10-01","2023-08-05",date(2022,11,20))]

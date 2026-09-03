@@ -20,7 +20,7 @@ contaminating it. Years are classified CORE/THIN at runtime from actual density
 cross-referencing the eruption windows already used in script 04, since an
 eruption mid-season is a real confound for a "seasonal melt" baseline.
 """
-import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis")
+import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis")
 import glob, re, csv, numpy as np, rasterio, rasterio.features, geopandas as gpd, xdem
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from datetime import date
@@ -31,7 +31,7 @@ import warnings; warnings.filterwarnings("ignore")
 
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation")
-GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/ash_analysis/GLINV_main_massif.gpkg")
+GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
 crs="EPSG:32657"
 
 KNOWN_BAD={(2012,8,29),(2022,9,20)}   # mis-registered / corrupt, belt-and-suspenders on top of the NMAD/anomaly gate
