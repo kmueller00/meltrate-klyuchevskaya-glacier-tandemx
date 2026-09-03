@@ -1,7 +1,6 @@
 # Klyuchevskaya Glacier — Volcanic Eruption Impact on Glacier Elevation (TanDEM-X)
 
 **📄 [Read the full findings report](docs/index.html)** — or browse the source directly: [`prc07_overview_out/RESULTS_presentation/SUMMARY_findings.html`](prc07_overview_out/RESULTS_presentation/SUMMARY_findings.html).
-*(If GitHub Pages is enabled for this repo — Settings → Pages → Source: `main` branch, `/docs` folder — the report link above renders live in the browser instead of downloading.)*
 
 ## TL;DR
 
