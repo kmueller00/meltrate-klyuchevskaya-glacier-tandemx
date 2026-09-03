@@ -1,0 +1,4 @@
+set,n_px,area_km2,elev_mean,elev_med,slope_mean,ash_pct,dominant_aspect,rate_mean
+whole glacier,147150,132.435,2768.0107,2684.2832,16.079395,39.29527692830445,S,-0.19748546
+"HOTSPOT (fastest thinning, <=P5)",7360,6.624,3241.2349,3388.3486,22.546629,12.160326086956522,SE,-2.9480124
+"COLDSPOT (slowest/thickening, >=P95)",7358,6.6222,2770.6433,2715.1353,27.933678,42.810546344115245,SE,2.6477482

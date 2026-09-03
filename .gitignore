@@ -1,0 +1,11 @@
+# Regenerable rasters -- large, derived from the scripts + the DEM archive
+*.tif
+*.tiff
+*.aux.xml
+
+# Editor/office lock files, caches
+.~lock.*
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store

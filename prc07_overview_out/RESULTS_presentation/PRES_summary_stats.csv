@@ -1,0 +1,3 @@
+track,n_scenes,median_NMAD_m,median_outlier_pct,high_outlier_scenes
+ASC (155),47,3.6,1.47,5
+DESC (011),7,1.8,0.21,0

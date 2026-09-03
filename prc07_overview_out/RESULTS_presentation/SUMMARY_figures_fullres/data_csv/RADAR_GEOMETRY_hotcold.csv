@@ -1,0 +1,4 @@
+set,n_px,ls_map_flagged_pct,mean_coherence,mean_loc_inc_deg
+whole glacier,147150,0.30407155908260386,0.976632,39.95375
+HOTSPOT (fastest thinning),7360,0.9614064002197501,0.9411557,37.15064
+COLDSPOT (slowest/thickening),7358,1.117703877466538,0.8928996,40.115074

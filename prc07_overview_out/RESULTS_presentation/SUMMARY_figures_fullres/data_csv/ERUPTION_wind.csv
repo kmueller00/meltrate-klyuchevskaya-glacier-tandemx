@@ -1,0 +1,5 @@
+eruption,eruption_date,mean_wind_from_deg_10m,mean_windspeed_10m,mean_wind_from_deg_100m,mean_windspeed_100m,blows_toward_octant_10m,blows_toward_octant_100m
+2019_Oct,2019-10-25,176.1,2.37,172.6,6.2,N,N
+2020_Dec,2020-12-09,100.1,4.21,90.9,11.5,W,W
+2022_Nov,2022-11-20,235.7,5.41,237.0,14.12,NE,NE
+2023_PAROXYSM,2023-11-01,237.2,4.43,235.7,10.69,NE,NE
