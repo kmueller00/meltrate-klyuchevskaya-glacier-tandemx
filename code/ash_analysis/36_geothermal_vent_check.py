@@ -110,12 +110,17 @@ print(f"SPATIAL: {overlap_hf.sum():,} px overlap -- {pct_hotspot_in_flank:.1f}% 
 print(f"  hotspot mean elev {np.nanmean(elev[hot]):.0f}m vs flank-zone band {FLANK_ELEV[0]:.0f}-{FLANK_ELEV[1]:.0f}m "
       f"({'OVERLAPS' if np.nanmean(elev[hot])>=FLANK_ELEV[0] else 'BELOW vent elevation -- separate zones'})")
 
-# ---- (3) winter thermal composite (Landsat lwir11, DEC-FEB, all years, per-pixel QA-masked) ----
+# ---- (3) winter thermal composite (Landsat 8/9 lwir11, DEC-FEB, all years, per-pixel QA-masked) ----
 def fetch_thermal_winter():
+    # platform restricted to landsat-8/9 -- Landsat 7 uses a single 'lwir' band (different
+    # name AND bandpass/calibration than 8/9's lwir11), and odc.stac's band-alias resolver
+    # can fail outright ("No such band/alias: lwir11") when a batch mixes it in -- same
+    # fail-closed platform filter s2_util.py already uses for the optical Landsat fetch.
     it=list(CAT.search(collections=['landsat-c2-l2'],bbox=BBOX,
         datetime="2013-01-01/2026-06-01",query={'eo:cloud_cover':{'lt':60}}).items())
-    it=[i for i in it if i.datetime.month in (12,1,2)]
-    print(f"winter (Dec-Feb) Landsat scenes found: {len(it)}")
+    it=[i for i in it if i.datetime.month in (12,1,2)
+        and i.properties.get('platform') in ('landsat-8','landsat-9')]
+    print(f"winter (Dec-Feb) Landsat 8/9 scenes found: {len(it)}")
     if not it: return None
     ds=odc.stac.load(it,bands=["lwir11","qa_pixel"],bbox=BBOX,resolution=30.0,
                      crs=crs,groupby="solar_day",chunks={})
