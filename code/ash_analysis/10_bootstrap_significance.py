@@ -25,10 +25,11 @@ GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/
 crs="EPSG:32657"; RES=30.0
 NB=2000; rng=np.random.default_rng(42)
 
-BRACKETS=[("2019 Oct","2019-09-27","2020-09-02",date(2019,10,25)),
-          ("2020 Dec","2020-09-24","2021-08-31",date(2020,12,9)),
-          ("2022 Nov","2022-10-01","2023-08-05",date(2022,11,20)),
-          ("2023 PAROXYSM","2023-09-29","2024-09-04",date(2023,11,1))]
+BRACKETS=[("2015 Aug-Sep","2015-08-23","2016-08-31",date(2015,8,27),"landsat",150),
+          ("2019 Oct","2019-09-27","2020-09-02",date(2019,10,25),"s2",60),
+          ("2020 Dec","2020-09-24","2021-08-31",date(2020,12,9),"s2",60),
+          ("2022 Nov","2022-10-01","2023-08-05",date(2022,11,20),"s2",60),
+          ("2023 PAROXYSM","2023-09-29","2024-09-04",date(2023,11,1),"s2",60)]
 
 def dem_path(dstr):
     for sd in glob.glob(f"{BASE}/{dstr[:4]}/{dstr}*155_0045*"):
@@ -52,7 +53,7 @@ def boot(a,c,block=None):
 
 shp=gpd.read_file(GLINV).to_crs(crs)
 rows_out=[]
-for lab,pre,post,ED in BRACKETS:
+for lab,pre,post,ED,src,wd in BRACKETS:
     fA=dem_path(post); fB=dem_path(pre)
     if not(fA and fB): print(f"{lab}: missing DEM"); continue
     with rasterio.open(fA) as s:
@@ -68,8 +69,8 @@ for lab,pre,post,ED in BRACKETS:
         out_shape=(rows,cols),transform=tr,fill=0,dtype='uint8').astype(bool)
     stv=dh[(~gm)&np.isfinite(dh)]
     if stv.size>1000: dh=dh-np.nanmedian(stv)
-    ndA,brA=ndsi_bright(post,rows,cols,tr,crs,erupt_date=ED,side="post",gm=gm,label=f"{lab} post")
-    ndB,_  =ndsi_bright(pre, rows,cols,tr,crs,erupt_date=ED,side="pre", gm=gm,label=f"{lab} pre")
+    ndA,brA=ndsi_bright(post,rows,cols,tr,crs,erupt_date=ED,side="post",gm=gm,label=f"{lab} post",source=src,wide_days=wd)
+    ndB,_  =ndsi_bright(pre, rows,cols,tr,crs,erupt_date=ED,side="pre", gm=gm,label=f"{lab} pre", source=src,wide_days=wd)
     if ndA is None or ndB is None: print(f"{lab}: S2 fail"); continue
     dn=ndA-ndB; br_thr=np.nanpercentile(brA[gm&np.isfinite(brA)],40)
     ash=gm&np.isfinite(dn)&(dn<-0.2)&(ndA<0.3)&(brA<br_thr)

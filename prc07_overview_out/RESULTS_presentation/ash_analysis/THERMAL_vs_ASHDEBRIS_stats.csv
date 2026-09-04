@@ -1,0 +1,13 @@
+season,class,elevation_controlled_anomaly_C,n_elev_bands
+DJF,persistent,1.462916374206543,8
+DJF,eruption_specific,2.0754106044769287,14
+DJF,never,nan,0
+MAM,persistent,5.607165813446045,9
+MAM,eruption_specific,4.793467998504639,14
+MAM,never,nan,0
+JJA,persistent,7.432671546936035,9
+JJA,eruption_specific,3.0539944171905518,14
+JJA,never,nan,0
+SON,persistent,3.931013345718384,9
+SON,eruption_specific,4.011167049407959,14
+SON,never,nan,0
