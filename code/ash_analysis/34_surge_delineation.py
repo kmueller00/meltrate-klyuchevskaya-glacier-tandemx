@@ -121,7 +121,8 @@ for it in overlapping:
 
     # per-pixel median velocity across all time (a "typical flow speed" map for the figure)
     v_med_map=v_crop.median(dim="mid_date",skipna=True).compute().values
-    tile_maps.append((x[x0:x1+1],y[y0:y1+1],v_med_map,hot_c,cold_c,gm_c))
+    tile_crop_tr=Affine(res_x,0,x[x0]-res_x/2, 0,res_y,y[y0]-res_y/2)
+    tile_maps.append((x[x0:x1+1],y[y0:y1+1],v_med_map,hot_c,cold_c,gm_c,tile_crop_tr))
 
     glacier_all_v.append(v_med_map[gm_c][np.isfinite(v_med_map[gm_c])])
     hot_all_v.append(v_med_map[hot_c][np.isfinite(v_med_map[hot_c])])
@@ -169,16 +170,32 @@ with open(AOUT/"SURGE_DELINEATION_stats.csv","w") as f:
         f.write(f"{yr},{v:.2f},{cold_d.get(yr,float('nan')):.2f}\n")
 print("\n-> SURGE_DELINEATION_stats.csv")
 
-fig,axs=plt.subplots(1,len(tile_maps),figsize=(7*max(len(tile_maps),1),6),squeeze=False)
-for i,(tx,ty,vmap,hmask,cmask,gmask) in enumerate(tile_maps):
-    ax=axs[0,i]
-    disp=np.where(gmask,vmap,np.nan)
-    im=ax.imshow(disp,cmap="viridis",vmin=0,vmax=np.nanpercentile(disp,95) if np.isfinite(disp).any() else 1,
-                 extent=[tx.min(),tx.max(),ty.min(),ty.max()])
-    ax.contour(hmask.astype(float),levels=[0.5],colors="red",extent=[tx.min(),tx.max(),ty.max(),ty.min()],linewidths=1.5)
-    ax.contour(cmask.astype(float),levels=[0.5],colors="cyan",extent=[tx.min(),tx.max(),ty.max(),ty.min()],linewidths=1.5)
-    fig.colorbar(im,ax=ax,label="median flow speed [m/yr]")
-    ax.set_title("ITS_LIVE flow speed (median all-time)\nred=hotspot outline, cyan=coldspot outline")
+# merge all tiles onto ONE common grid (the project's own EPSG:32657 grid,
+# same as every other figure in this report) instead of plotting each
+# ITS_LIVE tile as a separate panel in its own native pixel space -- with
+# the glacier straddling two tiles, that previously showed most of the
+# glacier in one panel and a small, seemingly disconnected fragment in the
+# other, cut off rather than a single coherent map.
+v_merged=np.full((rows,cols),np.nan,"float32")
+for tx,ty,vmap,hmask,cmask,gmask,tile_crop_tr in tile_maps:
+    v_src=np.where(gmask,vmap,np.nan).astype("float32")
+    v_dst=np.full((rows,cols),np.nan,"float32")
+    reproject(v_src,v_dst,src_transform=tile_crop_tr,src_crs="EPSG:3413",
+              dst_transform=tr,dst_crs=crs,resampling=Resampling.bilinear)
+    fill=np.isnan(v_merged)&np.isfinite(v_dst)
+    v_merged[fill]=v_dst[fill]
+
+left,bottom,right,top=rasterio.transform.array_bounds(rows,cols,tr)
+ext=[left,right,bottom,top]
+fig,ax=plt.subplots(figsize=(10,10))
+im=ax.imshow(v_merged,cmap="viridis",vmin=0,
+             vmax=np.nanpercentile(v_merged,95) if np.isfinite(v_merged).any() else 1,extent=ext)
+ax.contour(hot.astype(float),levels=[0.5],colors="red",extent=ext,linewidths=1.2)
+ax.contour(cold.astype(float),levels=[0.5],colors="cyan",extent=ext,linewidths=1.2)
+shp.boundary.plot(ax=ax,color='k',linewidth=0.5)
+ax.set_xlim(left,right); ax.set_ylim(bottom,top)
+fig.colorbar(im,ax=ax,label="median flow speed [m/yr]",fraction=0.046)
+ax.set_title(f"ITS_LIVE flow speed (median all-time), {len(tile_maps)} tiles merged\nred=hotspot outline, cyan=coldspot outline")
 fig.tight_layout(); fig.savefig(AOUT/"SURGE_DELINEATION_velocity_map.png",dpi=600,bbox_inches="tight")
 print("-> SURGE_DELINEATION_velocity_map.png")
 

@@ -60,6 +60,18 @@ def best_scene(files):
 
 def is_summer(mo): return 5<=mo<=10
 
+COH_MIN=0.8   # same scene-level coherence gate as dH_robust_all.py -- see that
+# file's comment for the archive-wide check (18/348 scenes fall below 0.8,
+# mostly 2015's systematic coherence issue plus the known-bad 2012-08-29).
+def scene_coherence_ok(sd):
+    g=glob.glob(str(sd/"prc06"/"*.int_coh.tif"))
+    if not g: return True
+    with rasterio.open(g[0]) as s:
+        a=s.read(1).astype("float32"); a[a<=0]=np.nan
+        v=a[np.isfinite(a)]
+    if v.size<1000: return True
+    return float(np.nanmedian(v))>=COH_MIN
+
 byday={}
 for yd in sorted(BASE.glob("20*")):
     for sd in sorted(yd.glob("20*")):
@@ -86,7 +98,6 @@ print(f"cropped grid {rows}x{cols} (glacier+1km buffer)  bounds {xmin,xmax,ymin,
 
 gm=rasterio.features.rasterize([(g,1) for g in shp.geometry if g is not None],
     out_shape=(rows,cols),transform=tr,fill=0,dtype='uint8').astype(bool)
-st=~gm
 
 def load_on(f):
     with rasterio.open(f) as s:
@@ -100,6 +111,13 @@ Zref=load_on(ref_f)
 rB=xdem.DEM.from_array(Zref,transform=tr,crs=crs,nodata=np.nan)
 print(f"reference: {Path(ref_f).stem[:40]}")
 
+# 2-40 degree slope restriction on stable terrain (same convention as
+# dH_robust_all.py, now the default rather than a one-off sensitivity check):
+# Hugonnet et al. 2022/xdem steep cutoff, Nuth & Kaab 2011 flat cutoff.
+gyy,gxx=np.gradient(Zref,RES)
+slope_deg=np.degrees(np.arctan(np.hypot(gxx,gyy)))
+st=(~gm)&(slope_deg>=2)&(slope_deg<=40)&np.isfinite(slope_deg)
+
 # hard reject on implausible coregistration shift -- FULL_COREG_scan.csv (2026-08-04)
 # showed a median shift of (-1.50,-0.10)m with MAD-radius 3.22m across the full
 # archive, and one clearly failed fit (2012-08-29, shift ~104m, ~33x the MAD
@@ -108,8 +126,12 @@ print(f"reference: {Path(ref_f).stem[:40]}")
 MAX_SHIFT_M=25.0
 t0=date(2024,9,4).toordinal()
 tvals=[]; stack=[]; n_ok=0; n_fail=0; n_rejected=0
+n_coh_excluded=0
 for i,day in enumerate(days):
     f=best_scene(byday[day])
+    sd=Path(f).parent.parent
+    if not scene_coherence_ok(sd):
+        n_coh_excluded+=1; continue
     try:
         A=load_on(f)
         if f==ref_f:
@@ -132,7 +154,8 @@ for i,day in enumerate(days):
         print(f"  FAILED {day}: {e}")
     if (i+1)%20==0: print(f"  {i+1}/{len(days)} processed (ok={n_ok} fail={n_fail} rejected={n_rejected})")
 
-print(f"coregistered {n_ok}/{len(days)} summer days onto fixed 2024-09-04 reference ({n_rejected} rejected, {n_fail} failed)")
+print(f"coregistered {n_ok}/{len(days)} summer days onto fixed 2024-09-04 reference "
+      f"({n_rejected} shift-rejected, {n_coh_excluded} coherence-excluded, {n_fail} failed)")
 Z=np.stack(stack,axis=0); T=np.array(tvals,dtype="float32")
 del stack
 

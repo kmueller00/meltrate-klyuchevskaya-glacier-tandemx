@@ -33,8 +33,23 @@ def find_dem(sd):
 def is_season(mo,seas):
     return (mo>=11 or mo<=4) if seas=="winter" else (5<=mo<=10)
 
+COH_MIN=0.8   # scene-level exclusion threshold. Checked against the full archive
+# (348 scenes on this track): coherence is very high almost everywhere (median 0.998,
+# p10=0.96); only 18 scenes fall below 0.8, one of which is the already-known-bad
+# 2012-08-29, and 14 of the other 17 are 2015 scenes (which have a separate,
+# systematic coherence problem -- see the report's 2015 discussion). 0.8 is
+# conservative: it barely touches good data but reliably catches genuinely bad scenes.
+def scene_coherence_ok(sd):
+    g=glob.glob(str(sd/"prc06"/"*.int_coh.tif"))
+    if not g: return True   # no coherence product available -- don't silently drop the scene
+    with rasterio.open(g[0]) as s:
+        a=s.read(1).astype("float32"); a[a<=0]=np.nan
+        v=a[np.isfinite(a)]
+    if v.size<1000: return True
+    return float(np.nanmedian(v))>=COH_MIN
+
 def collect(seas):
-    out=[]
+    out=[]; n_coh_excluded=0
     for yd in sorted(BASE.glob("20*")):
         for sd in sorted(yd.glob("20*")):
             nm=sd.name; m=re.match(r"(\d{4})-(\d{2})-(\d{2})",nm)
@@ -46,7 +61,11 @@ def collect(seas):
             if not f: continue
             with rasterio.open(f) as s:
                 a=s.read(1); v=np.sum((a!=s.nodata)&np.isfinite(a)&(a>-1000)&(a<9000))
-            if v>MIN_VALID: out.append((date(y,mo,da),f))
+            if v<=MIN_VALID: continue
+            if not scene_coherence_ok(sd):
+                n_coh_excluded+=1; continue
+            out.append((date(y,mo,da),f))
+    print(f"  [{seas}] coherence-excluded (<{COH_MIN}): {n_coh_excluded} scenes")
     return out
 
 FULL_FOOTPRINT_REF=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b/"
@@ -95,7 +114,16 @@ def run(seas):
     shp=gpd.read_file(GLINV).to_crs(crs)
     gm=rasterio.features.rasterize([(g,1) for g in shp.geometry if g is not None],
         out_shape=(rows,cols),transform=tr,fill=0,dtype="uint8").astype(bool)
-    st=~gm
+    # 2-40 degree slope restriction on stable terrain, now the default rather than a
+    # one-off sensitivity check (see "Does the stable-terrain mask itself matter?" in
+    # the report): steep cutoff after Hugonnet et al. 2022 / xdem convention, flat
+    # cutoff after Nuth & Kaab 2011. Previously verified this leaves most years'
+    # rates visually unchanged while widening CIs where fewer stable pixels survive --
+    # a real robustness gain, not expected to flip any conclusion.
+    zref=read_grid(str(FULL_FOOTPRINT_REF),rows,cols,tr)
+    gy,gx=np.gradient(zref,RES)
+    slope_deg=np.degrees(np.arctan(np.hypot(gx,gy)))
+    st=(~gm)&(slope_deg>=2)&(slope_deg<=40)&np.isfinite(slope_deg)
     try:
         rD=xdem.DEM.from_array(emed,transform=tr,crs=crs,nodata=np.nan)
         tD=xdem.DEM.from_array(lmed,transform=tr,crs=crs,nodata=np.nan)

@@ -32,7 +32,10 @@ warnings.filterwarnings("ignore")
 
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation")
 GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
-RATE_TIF=AOUT/"summer_robust_rate_glacieronly.tif"
+RATE_TIF=AOUT/"summer_trend_rate_glacieronly.tif"   # per-pixel trend (95.9% glacier coverage),
+# not the old two-bucket estimator (summer_robust_rate_glacieronly.tif, 65.6% coverage) --
+# that gap was the actual cause of this map's "cut off" appearance, not the elevation
+# reference (which is also fixed below, but was a secondary issue).
 ASH_TIFS=[AOUT/"ash_analysis/ASHMASK_2019_Oct_moderate.tif",
           AOUT/"ash_analysis/ASHMASK_2020_Dec_moderate.tif",
           AOUT/"ash_analysis/ASHMASK_2022_Nov_moderate.tif",
@@ -48,7 +51,6 @@ shp=gpd.read_file(GLINV).to_crs(crs)
 gm=rasterio.features.rasterize([(g,1) for g in shp.geometry if g is not None],
     out_shape=(rows,cols),transform=tr,fill=0,dtype='uint8').astype(bool)
 
-fL0=glob.glob("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b/2024/2024-09-04*155_0045*/prc07/DEM_FNL_*.tif")[0]
 def load_on(f,resamp=Resampling.bilinear,srcnodata=None):
     with rasterio.open(f) as s:
         a=s.read(1).astype("float32")
@@ -57,7 +59,27 @@ def load_on(f,resamp=Resampling.bilinear,srcnodata=None):
         o=np.full((rows,cols),np.nan,"float32")
         reproject(a,o,src_transform=s.transform,src_crs=s.crs,dst_transform=tr,dst_crs=crs,resampling=resamp)
     return o
-Z=load_on(fL0); Z[(Z<0)|(Z>5000)]=np.nan
+
+# same 7 large-footprint scenes used for the elevation composite AND the
+# radar-geometry composite below (ls_map/loc_inc/int_coh) -- see
+# _build_full_grid_elevation_mosaic.py for scene-selection rationale.
+_RADAR_SCENES=[
+ "2019/2019-06-09_065921_TDT_SM_A_66454_155_0045+1-2/prc06/2019-06-09_065921_TDT_SM_A_66454_155_0045+1-2",
+ "2019/2019-06-20_065923_TDT_SM_A_66621_155_0045+1-2/prc06/2019-06-20_065923_TDT_SM_A_66621_155_0045+1-2",
+ "2019/2019-07-01_065923_TDT_SM_A_66788_155_0045+1-2/prc06/2019-07-01_065923_TDT_SM_A_66788_155_0045+1-2",
+ "2024/2024-09-15_065957_TDT_SM_A_95679_155_0045_HH./prc06/2024-09-15_065957_TDT_SM_A_95679_155_0045_HH.",
+ "2013/2013-09-29_065848_TDT_SM_A_34891_155_0045_HH./prc06/2013-09-29_065848_TDT_SM_A_34891_155_0045_HH.",
+ "2023/2023-07-03_065948_TDT_SM_A_88999_155_0045_HH./prc06/2023-07-03_065948_TDT_SM_A_88999_155_0045_HH.",
+ "2024/2024-09-04_065957_TDT_SM_A_95512_155_0045_HH./prc06/2024-09-04_065957_TDT_SM_A_95512_155_0045_HH.",
+]
+_RBASE="/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b/"
+
+# now that RATE_TIF (and therefore this script's grid) matches script 32's
+# glacier-cropped extent, the pre-built full-grid elevation mosaic lines up
+# directly -- no need to rebuild it inline.
+with rasterio.open(AOUT/"FULL_GRID_elevation_mosaic.tif") as s:
+    Z=s.read(1).astype("float32"); Z[Z==s.nodata]=np.nan
+print(f"elevation coverage: {np.isfinite(Z).sum():,} / {rows*cols:,} grid px")
 gy,gx=np.gradient(Z,RES)
 slope_deg=np.degrees(np.arctan(np.hypot(gx,gy)))
 aspect_deg=(np.degrees(np.arctan2(gx,-gy))+360)%360
@@ -78,10 +100,32 @@ hot=valid&(rate<=p05); cold=valid&(rate>=p95)
 print(f"valid={valid.sum():,} hot={hot.sum():,} cold={cold.sum():,}")
 
 # ---------- (A) radar geometry ----------
-ls_map=load_on(SAR_SCENE+".ls_map.tif",resamp=Resampling.nearest,srcnodata=0).astype("float32")
-loc_inc=load_on(SAR_SCENE+".loc_inc.tif"); loc_inc[loc_inc<=0]=np.nan
+# Multi-scene composite instead of one reference scene (which only covered a
+# quarter of the glacier, same family of bug as the elevation reference --
+# see script 36/37). ls_map/loc_inc are pure imaging geometry (orbit heading,
+# look angle, terrain) and barely change scene to scene on the same track, so
+# they're gap-filled in priority order (largest footprint first, no
+# averaging needed). int_coh genuinely varies by date (surface/weather
+# conditions), so it's combined as a per-pixel median across the same scene
+# set instead.
+ls_map=np.full((rows,cols),np.nan,"float32")
+loc_inc=np.full((rows,cols),np.nan,"float32")
+coh_stack=[]
+for rel in _RADAR_SCENES:
+    p=_RBASE+rel
+    lsm=load_on(p+".ls_map.tif",resamp=Resampling.nearest,srcnodata=0).astype("float32")
+    fill=np.isnan(ls_map)&np.isfinite(lsm)
+    ls_map[fill]=lsm[fill]
+    li=load_on(p+".loc_inc.tif"); li[li<=0]=np.nan
+    fill=np.isnan(loc_inc)&np.isfinite(li)
+    loc_inc[fill]=li[fill]
+    ic=load_on(p+".int_coh.tif"); ic[ic<=0]=np.nan
+    coh_stack.append(ic)
 loc_inc=np.degrees(loc_inc)   # GAMMA loc_inc is in radians (confirmed: raw ~0.69 matches .mli.par incidence_angle=39.44deg)
-int_coh=load_on(SAR_SCENE+".int_coh.tif"); int_coh[int_coh<=0]=np.nan
+int_coh=np.nanmedian(np.stack(coh_stack),axis=0)
+print(f"radar-geometry composite from {len(_RADAR_SCENES)} scenes: "
+      f"ls_map {np.isfinite(ls_map).sum():,}px  loc_inc {np.isfinite(loc_inc).sum():,}px  "
+      f"int_coh {np.isfinite(int_coh).sum():,}px (of {rows*cols:,} grid px)")
 
 vals,counts=np.unique(ls_map[np.isfinite(ls_map)],return_counts=True)
 dominant=vals[np.argmax(counts)]

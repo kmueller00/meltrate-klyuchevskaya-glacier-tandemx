@@ -36,7 +36,9 @@ warnings.filterwarnings("ignore")
 
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation")
 GLINV=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis/GLINV_main_massif.gpkg")
-RATE_TIF=AOUT/"summer_robust_rate_glacieronly.tif"
+RATE_TIF=AOUT/"summer_trend_rate_glacieronly.tif"   # grid template only (script 30 doesn't
+# use rate values itself) -- switched from the old two-bucket tif (65.6% coverage) to
+# match the grid every other script now uses, so the elevation mosaic below lines up.
 crs="EPSG:32657"; RES=30.0
 LAT,LON=56.06,160.63
 
@@ -52,7 +54,6 @@ shp=gpd.read_file(GLINV).to_crs(crs)
 gm=rasterio.features.rasterize([(g,1) for g in shp.geometry if g is not None],
     out_shape=(rows,cols),transform=tr,fill=0,dtype='uint8').astype(bool)
 
-fL0=glob.glob("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b/2024/2024-09-04*155_0045*/prc07/DEM_FNL_*.tif")[0]
 def load_on(f,resamp=Resampling.bilinear):
     with rasterio.open(f) as s:
         a=s.read(1).astype("float32")
@@ -60,7 +61,10 @@ def load_on(f,resamp=Resampling.bilinear):
         o=np.full((rows,cols),np.nan,"float32")
         reproject(a,o,src_transform=s.transform,src_crs=s.crs,dst_transform=tr,dst_crs=crs,resampling=resamp)
     return o
-Z=load_on(fL0); Z[(Z<0)|(Z>5000)]=np.nan
+# full-grid elevation composite (98.3% coverage) instead of a single reference
+# scene (63.5%) -- see script 36/37 for why this was fixed.
+with rasterio.open(AOUT/"FULL_GRID_elevation_mosaic.tif") as s:
+    Z=s.read(1).astype("float32"); Z[Z==s.nodata]=np.nan
 gy,gx=np.gradient(Z,RES)
 aspect_deg=(np.degrees(np.arctan2(gx,-gy))+360)%360
 valid=gm&np.isfinite(Z)

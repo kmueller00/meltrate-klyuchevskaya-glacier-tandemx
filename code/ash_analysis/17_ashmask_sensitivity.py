@@ -72,18 +72,26 @@ for lab,pre,post,ED in BRACKETS:
         print(f"{lab} [{nm}]: {m.sum():,} px = {km2:.1f} km2 ({100*m.sum()/gm.sum():.1f}% glacier) "
               f"ash={ma:+.2f} clean={mc:+.2f} anomaly={ma-mc:+.2f} m")
         allrows.append((lab,nm,m.sum(),km2,ma-mc))
-    # figure per bracket: NDSI + 3 contours, anomaly bars
-    fig=plt.figure(figsize=(14,6)); gs=fig.add_gridspec(1,2,width_ratios=[1.25,0.8])
-    ax0=fig.add_subplot(gs[0]); ax1=fig.add_subplot(gs[1])
+    # figure per bracket: one map panel PER threshold setting (previously all
+    # three were overlaid as contours on one panel; the strict/moderate
+    # contours were effectively invisible against the loose one -- separate
+    # panels make each setting's actual extent unambiguous) + anomaly bars
+    fig=plt.figure(figsize=(20,6)); gs=fig.add_gridspec(1,4,width_ratios=[1,1,1,0.8])
     ext=[xb.left,xb.right,xb.bottom,xb.top]
-    ax0.imshow(ndA,cmap='RdBu',vmin=-0.5,vmax=1,extent=ext)
-    for (nm,_,_,_,_),col in zip(SETTINGS,("lime","gold","magenta")):
+    mask_cols=["#39a339","#c9a227","#b05ab0"]
+    for i,((nm,_,_,_,_),col) in enumerate(zip(SETTINGS,mask_cols)):
+        axi=fig.add_subplot(gs[i])
+        axi.imshow(ndA,cmap='RdBu',vmin=-0.5,vmax=1,extent=ext)
         if masks[nm].any():
-            ax0.contour(np.flipud(masks[nm].astype(float)),levels=[.5],colors=col,linewidths=1.1,extent=ext)
-    ax0.set_title(f"{lab}: ash–mask extents\nlime=strict  gold=moderate  magenta=loose")
-    ax0.set_xticks([]); ax0.set_yticks([])
+            axi.contourf(np.flipud(masks[nm].astype(float)),levels=[.5,1.5],colors=[col],
+                         alpha=0.55,extent=ext)
+            axi.contour(np.flipud(masks[nm].astype(float)),levels=[.5],colors=col,linewidths=1.3,extent=ext)
+        r=[x for x in allrows if x[0]==lab and x[1]==nm][0]
+        axi.set_title(f"{nm}\n{r[3]:.0f} km², anomaly {r[4]:+.2f} m",color=col,fontweight="bold")
+        axi.set_xticks([]); axi.set_yticks([])
+    ax1=fig.add_subplot(gs[3])
     sub=[r for r in allrows if r[0]==lab]
-    ax1.bar(range(3),[r[4] for r in sub],color=["#5aa456","#c9a227","#b05ab0"])
+    ax1.bar(range(3),[r[4] for r in sub],color=mask_cols)
     ax1.set_xticks(range(3)); ax1.set_xticklabels([r[1]+f"\n{r[3]:.0f} km²" for r in sub],fontsize=9)
     ax1.axhline(0,color='k',lw=0.7); ax1.set_ylabel("ash − clean anomaly [m]")
     for i,r in enumerate(sub): ax1.text(i,r[4]+(0.05 if r[4]>=0 else -0.05),f"{r[4]:+.2f}",

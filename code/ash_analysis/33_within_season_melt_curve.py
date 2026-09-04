@@ -225,40 +225,55 @@ def rate_curve(curve):
     rates=(vals[1:]-vals[:-1])/np.maximum(doys[1:]-doys[:-1],1)
     return mids,rates
 
-# ── plot ──────────────────────────────────────────────────────────────────
-fig,(ax1,ax2)=plt.subplots(2,1,figsize=(12,10),sharex=True)
+# ── plot: small multiples, one panel per clean year, + one summary panel ──
+# (previously one panel overlaid all 14 years including 10 "thin" ones as
+# grey clutter -- diluted the 4 real clean-year signals into an illegible
+# tangle. Each year gets its own axis here so its actual shape is visible,
+# with the multi-year mean as a shared dashed reference in every panel.)
 month_ticks=[date(2001,m,1).timetuple().tm_yday for m in range(4,11)]
 month_labs=["Apr","May","Jun","Jul","Aug","Sep","Oct"]
+n_panels=len(clean_years)+1
+fig,axes=plt.subplots(2,n_panels,figsize=(3.6*n_panels,8),sharex=True,sharey="row")
 
-for y in years:
+for i,y in enumerate(clean_years):
+    ax=axes[0,i]
     doys=[d for d,_ in curves[y]]; vals=[v for _,v in curves[y]]
-    if tier[y]=="thin":
-        ax1.plot(doys,vals,color="grey",ls=":",lw=1.1,alpha=0.7,zorder=1)
-    else:
-        col = "#1f6f78" if y in clean_years else "#a8481f"
-        ax1.plot(doys,vals,color=col,lw=1.3,alpha=0.85,zorder=2,
-                  label=f"{y}"+("" if y in clean_years else " (eruption)"))
+    if len(clean_years)>0: ax.plot(DOY_GRID,mean_curve,color="#999",lw=1.6,ls="--",zorder=1,label="mean" if i==0 else None)
+    ax.plot(doys,vals,color="#1f6f78",lw=1.8,marker="o",ms=4,zorder=2)
+    ax.axhline(0,color="k",lw=0.6,ls=":")
+    ax.set_title(str(y),fontweight="bold"); ax.grid(alpha=0.3)
+    if i==0: ax.set_ylabel("elevation anomaly vs each year's\nown first spring scene [m]")
+axes[0,0].legend(loc="lower left",fontsize=8)
+
+axS=axes[0,n_panels-1]
 if len(clean_years)>0:
-    ax1.plot(DOY_GRID,mean_curve,color="#0d3b40",lw=3.2,zorder=4,label=f"clean-year mean (n={len(clean_years)})")
-    ax1.fill_between(DOY_GRID,mean_curve-std_curve,mean_curve+std_curve,color="#0d3b40",alpha=0.15,zorder=3)
-ax1.axhline(0,color="k",lw=0.6,ls=":")
-ax1.set_ylabel("elevation anomaly vs each year's own\nfirst spring/early-summer scene [m]")
-ax1.set_title("Klyuchevskaya within-season melt progression\n"
-              "teal = clean (no eruption Apr–Sep that year), ember = eruption-affected, "
-              "dotted grey = thin/excluded year")
-ax1.legend(loc="lower left",fontsize=7.5,ncol=3)
-ax1.grid(alpha=0.3)
+    axS.plot(DOY_GRID,mean_curve,color="#0d3b40",lw=2.8,zorder=3)
+    axS.fill_between(DOY_GRID,mean_curve-std_curve,mean_curve+std_curve,color="#0d3b40",alpha=0.18,zorder=2)
+for y in [yy for yy in years if tier[yy]=="thin" or (tier[yy]=="core" and yy not in clean_years)]:
+    doys=[d for d,_ in curves[y]]; vals=[v for _,v in curves[y]]
+    col = "#a8481f" if tier[y]=="core" else "#ccc"
+    axS.plot(doys,vals,color=col,lw=0.9,ls=":" if tier[y]=="thin" else "-",alpha=0.6,zorder=1)
+axS.axhline(0,color="k",lw=0.6,ls=":")
+axS.set_title(f"mean (n={len(clean_years)}) +\nother years, faint",fontweight="bold"); axS.grid(alpha=0.3)
 
-for y in core_years:
+for i,y in enumerate(clean_years):
+    ax=axes[1,i]
     mids,rates=rate_curve(curves[y])
-    col = "#1f6f78" if y in clean_years else "#a8481f"
-    ax2.plot(mids,rates,color=col,lw=1.1,alpha=0.8,marker="o",ms=3)
-ax2.axhline(0,color="k",lw=0.6,ls=":")
-ax2.set_ylabel("melt rate [m/day]\n(finite difference, consecutive scenes)")
-ax2.set_xlabel("day of year")
-ax2.set_xticks(month_ticks); ax2.set_xticklabels(month_labs)
-ax2.grid(alpha=0.3)
+    ax.plot(mids,rates,color="#1f6f78",lw=1.3,marker="o",ms=3)
+    ax.axhline(0,color="k",lw=0.6,ls=":"); ax.grid(alpha=0.3)
+    ax.set_xticks(month_ticks); ax.set_xticklabels(month_labs,rotation=45,fontsize=8)
+    if i==0: ax.set_ylabel("melt rate [m/day]\n(finite difference)")
+axR=axes[1,n_panels-1]
+for y in clean_years:
+    mids,rates=rate_curve(curves[y])
+    axR.plot(mids,rates,color="#1f6f78",lw=1.0,alpha=0.6)
+axR.axhline(0,color="k",lw=0.6,ls=":"); axR.grid(alpha=0.3)
+axR.set_xticks(month_ticks); axR.set_xticklabels(month_labs,rotation=45,fontsize=8)
+axR.set_title("all clean years\noverlaid",fontweight="bold")
 
+fig.suptitle("Klyuchevskaya within-season melt progression -- one panel per clean year "
+             f"(n={len(clean_years)}: {', '.join(map(str,clean_years))}), "
+             "eruption-affected/thin years excluded from the mean",fontsize=12)
 fig.tight_layout()
 fig.savefig(AOUT/"WITHIN_SEASON_melt_curve.png",dpi=600,bbox_inches="tight")
 print("\n-> WITHIN_SEASON_melt_curve.png")
