@@ -77,9 +77,9 @@ for lab,pre,post,desc,ED in ERUPS:
     if ash.any(): ax0.contour(np.flipud(ash.astype(float)),levels=[.5],colors='lime',linewidths=1.2,extent=ext)
     ax0.set_title(f"S2 NDSI post–eruption ({post[:7]})\nblue=snow  red=ash/rock  (green=ash mask)")
     gvv=dh[gm&np.isfinite(dh)]; vlim=max(3,np.nanpercentile(np.abs(gvv),95)) if gvv.size else 5
-    im=ax1.imshow(np.where(gm,dh,np.nan),cmap='RdBu_r',vmin=-vlim,vmax=vlim,extent=ext)
+    im=ax1.imshow(np.where(gm,dh,np.nan),cmap='RdBu',vmin=-vlim,vmax=vlim,extent=ext)
     if ash.any(): ax1.contour(np.flipud(ash.astype(float)),levels=[.5],colors='lime',linewidths=1.2,extent=ext)
-    ax1.set_title(f"DEM dH {pre}→{post}\nred=gain(deposition) blue=loss(melt)")
+    ax1.set_title(f"DEM dH {pre}→{post}\nred=loss(melt) blue=gain(deposition)")
     fig.colorbar(im,cax=cax,label="dH [m]")
     if da.size>20 and dc.size>20:
         ax2.boxplot([dc[np.isfinite(dc)],da[np.isfinite(da)]],labels=['clean','ash'],

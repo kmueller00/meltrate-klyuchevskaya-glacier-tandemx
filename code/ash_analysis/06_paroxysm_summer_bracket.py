@@ -110,7 +110,7 @@ ext=[xb.left,xb.right,xb.bottom,xb.top]
 ax0.imshow(ndA,cmap='RdBu',vmin=-0.5,vmax=1,extent=ext); ax0.set_title(f"S2 NDSI summer 2024\nblue=snow  red=ash/rock")
 if ash.any(): ax0.contour(np.flipud(ash.astype(float)),levels=[0.5],colors='lime',linewidths=1.2,extent=ext)
 vlim=max(3,np.nanpercentile(np.abs(dh[gm&np.isfinite(dh)]),95))
-im=ax1.imshow(np.where(gm,dh,np.nan),cmap='RdBu_r',vmin=-vlim,vmax=vlim,extent=ext)
+im=ax1.imshow(np.where(gm,dh,np.nan),cmap='RdBu',vmin=-vlim,vmax=vlim,extent=ext)
 if ash.any(): ax1.contour(np.flipud(ash.astype(float)),levels=[0.5],colors='lime',linewidths=1.2,extent=ext)
 ax1.set_title(f"DEM dH {PRE}→{POST}\nred=gain(deposition)  blue=loss(melt)")
 plt.colorbar(im,ax=ax1,shrink=0.7,label="dH [m]")

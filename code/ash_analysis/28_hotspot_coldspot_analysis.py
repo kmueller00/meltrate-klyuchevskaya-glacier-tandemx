@@ -70,26 +70,14 @@ shp=gpd.read_file(GLINV).to_crs(crs)
 gm=rasterio.features.rasterize([(g,1) for g in shp.geometry if g is not None],
     out_shape=(rows,cols),transform=tr,fill=0,dtype='uint8').astype(bool)
 
-# reference elevation grid: 2024-09-04 full-coverage DEM (same one step 21 uses)
-import glob
-def best_scene(files):
-    """Pick the scene with the LARGEST valid-pixel footprint, not an arbitrary
-    index -- a naive index pick can land on a partial/secondary sub-frame from
-    the same pass (seen 2014/2016/2020/2025), which silently corrupts the grid."""
-    best=None; best_n=-1
-    for f in files:
-        with rasterio.open(f) as s:
-            a=s.read(1); n=int((a!=s.nodata).sum())
-        if n>best_n: best_n=n; best=f
-    return best
-fL0=best_scene(glob.glob("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b/2024/2024-09-04*155_0045*/prc07/DEM_FNL_*.tif"))
-def load_on(f):
-    with rasterio.open(f) as s:
-        a=s.read(1).astype("float32"); a[(a==s.nodata)|(a<0)|(a>5000)]=np.nan
-        o=np.full((rows,cols),np.nan,"float32")
-        reproject(a,o,src_transform=s.transform,src_crs=s.crs,dst_transform=tr,dst_crs=crs,resampling=Resampling.bilinear)
-    o[(o<0)|(o>5000)]=np.nan; return o
-Z=load_on(fL0)
+# reference elevation grid: script 32's multi-scene per-pixel mean elevation
+# (summer_trend_elevation_mean.tif), not a single reference scene. A single
+# scene's own footprint (previously 2024-09-04) only covers 72.3% of the
+# glacier polygon -- missing almost entirely the northern branches, the same
+# short-baseline area script 32 already had to specially handle for the rate
+# itself. The multi-scene composite covers 97.3%, closing most of that gap.
+with rasterio.open(RATE_TIF.parent/"summer_trend_elevation_mean.tif") as s:
+    Z=s.read(1).astype("float32"); Z[Z==s.nodata]=np.nan
 gy,gx=np.gradient(Z,RES)
 slope_deg=np.degrees(np.arctan(np.hypot(gx,gy)))
 aspect_deg=(np.degrees(np.arctan2(gx,-gy))+360)%360   # 0=N,90=E,180=S,270=W
@@ -203,7 +191,7 @@ fig,ax=plt.subplots(figsize=(9,10))
 gm_show=np.where(gm,1,np.nan)
 ax.imshow(gm_show,cmap=ListedColormap(["#c9c2b4"]),extent=ext,zorder=1)
 show=np.where(valid,rate,np.nan)
-im=ax.imshow(show,cmap='RdBu_r',vmin=-2,vmax=2,extent=ext,zorder=2)
+im=ax.imshow(show,cmap='RdBu',vmin=-2,vmax=2,extent=ext,zorder=2)
 plt.colorbar(im,ax=ax,shrink=0.7,label="dH rate 2012→2025 [m/yr]")
 hot_show=np.where(hot,1,np.nan); cold_show=np.where(cold,1,np.nan)
 ax.imshow(hot_show,cmap=ListedColormap(["#000000"]),alpha=0.55,extent=ext,zorder=3)

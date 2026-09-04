@@ -70,11 +70,12 @@ longbase=valid&np.isfinite(baseline_yr)&(baseline_yr>=MIN_BASELINE_YR)
 p05,p95=np.nanpercentile(rate[longbase],[5,95])
 hot=longbase&(rate<=p05); cold=longbase&(rate>=p95)
 
-ref_f=glob.glob(str(BASE/"2024/2024-09-04*155_0045*/prc07/DEM_FNL_*.tif"))[0]
-with rasterio.open(ref_f) as s:
-    elev=np.full((rows,cols),np.nan,"float32")
-    a=s.read(1).astype("float32"); a[(a==s.nodata)|(a<0)|(a>5000)]=np.nan
-    reproject(a,elev,src_transform=s.transform,src_crs=s.crs,dst_transform=tr,dst_crs=crs,resampling=Resampling.bilinear)
+# 7-scene median elevation mosaic (98.3% grid coverage) instead of a single
+# reference scene (63.5% coverage) -- a single scene's own footprint silently
+# excluded over a third of the surrounding area from the geothermal scan,
+# undermining the "unbiased, whole-area" scan this script does.
+with rasterio.open(AOUT/"FULL_GRID_elevation_mosaic.tif") as s:
+    elev=s.read(1).astype("float32"); elev[elev==s.nodata]=np.nan
 
 xs=np.arange(cols)*tr.a+tr.c+tr.a/2; ys=np.arange(rows)*tr.e+tr.f+tr.e/2
 XX,YY=np.meshgrid(xs,ys)
