@@ -3,10 +3,10 @@ anomaly_threshold_C,20.72
 n_clusters,23
 n_clusters_on_ice,0
 n_clusters_in_hotspot,0
-anomaly_vs_rate_raw_r,-0.1
-anomaly_vs_rate_raw_p,8.198746524380396e-215
-anomaly_vs_rate_partial_r,-0.075
-anomaly_vs_rate_partial_p,2.178896880781299e-121
+anomaly_vs_rate_raw_r,-0.093
+anomaly_vs_rate_raw_p,2.3834975281464994e-187
+anomaly_vs_rate_partial_r,-0.071
+anomaly_vs_rate_partial_p,5.461758171257807e-110
 
 cluster_id,n_px,area_ha,lon,lat,elev_m,bearing_from_summit,dist_from_summit_m,mean_anomaly_C,pct_on_ice,pct_in_hotspot,pct_in_coldspot,is_apakhonchich_zone
 10,3071,276.4,160.6484,56.0446,3889.0,165.0,1407.0,24.2,0.0,0.0,0.0,False
