@@ -106,3 +106,50 @@ def ndsi_bright(around, rows, cols, tr, crs, erupt_date=None, side=None,
         vf=np.isfinite(nd)[gm].mean()*100
         print(f"  {label} {_SRC_TAG[source]} [{near[0]}..{near[1]}]: glacier valid {vf_near:.1f}% (near) -> {vf:.1f}% (near+wide)")
     return nd,br
+
+def fetch_tci(around, rows, cols, tr, crs, erupt_date=None, side=None,
+               near_days=20, wide_days=60, label=""):
+    """Sentinel-2 true-color (B04/B03/B02) composite for map backgrounds --
+    same near+wide gap-filling and eruption-date clamping as ndsi_bright,
+    contrast-stretched to the 2nd-98th percentile. Returns an (rows,cols,3)
+    float32 array in [0,1] (gaps filled white, not black), or None if no
+    scenes were found in either window."""
+    d0=date.fromisoformat(around) if isinstance(around,str) else around
+    near=(d0-timedelta(days=near_days), d0+timedelta(days=near_days))
+    wide=(d0-timedelta(days=wide_days), d0+timedelta(days=wide_days))
+    if erupt_date is not None and side=="pre":
+        cap=erupt_date-timedelta(days=1)
+        near=(near[0],min(near[1],cap)); wide=(wide[0],min(wide[1],cap))
+    elif erupt_date is not None and side=="post":
+        cap=erupt_date+timedelta(days=1)
+        near=(max(near[0],cap),near[1]); wide=(max(wide[0],cap),wide[1])
+    def fetch(d0,d1,cloud_lt=40):
+        if d0>=d1: return None
+        it=list(CAT.search(collections=['sentinel-2-l2a'],bbox=BBOX,
+            datetime=f"{d0.isoformat()}/{d1.isoformat()}",
+            query={'eo:cloud_cover':{'lt':cloud_lt}}).items())
+        if not it: return None
+        ds=odc.stac.load(it,bands=["B04","B03","B02","SCL"],bbox=BBOX,resolution=30.0,
+                         crs=crs,groupby="solar_day",chunks={})
+        scl=ds["SCL"]; valid=~scl.isin([0,1,3,8,9,10])
+        out=np.full((rows,cols,3),np.nan,'float32')
+        for i,b in enumerate(["B04","B03","B02"]):
+            a=ds[b].astype('float32').where(valid)
+            med=np.asarray(a.median(dim="time",skipna=True).values,'float32')
+            o=np.full((rows,cols),np.nan,'float32')
+            reproject(med,o,src_transform=ds.odc.transform,src_crs=crs,dst_transform=tr,dst_crs=crs,
+                      resampling=Resampling.bilinear)
+            out[:,:,i]=o
+        return out
+    rgb=fetch(*near); rgb_w=fetch(*wide)
+    if rgb is None: rgb=rgb_w
+    elif rgb_w is not None:
+        for i in range(3):
+            rgb[:,:,i]=np.where(np.isfinite(rgb[:,:,i]),rgb[:,:,i],rgb_w[:,:,i])
+    if rgb is None:
+        print(f"  {label} TCI: no scenes found"); return None
+    lo=np.nanpercentile(rgb,2); hi=np.nanpercentile(rgb,98)
+    rgb=np.clip((rgb-lo)/(hi-lo+1e-6),0,1)
+    rgb=np.where(np.isfinite(rgb),rgb,1.0).astype('float32')
+    print(f"  {label} TCI [{near[0]}..{near[1]}]")
+    return rgb

@@ -66,6 +66,27 @@ gm=rasterio.features.rasterize([(g,1) for g in shp.geometry if g is not None],
 st=~gm
 ref=rg(ref_f); refD=xdem.DEM.from_array(ref,transform=tr,crs=crs,nodata=np.nan)
 
+# ---- static "ever ash-flagged" mask (union of the 4 eruption masks, same
+# convention as scripts 35/38), reprojected onto THIS script's grid, so the
+# climate-comparison step (16) can compute a melt series restricted to
+# ash-covered ice alongside the whole-glacier one, reusing this expensive
+# per-scene coregistration pass rather than repeating it ----
+ASH_MASKS={
+ "2019 Oct":       AOUT/"ash_analysis/ASHMASK_2019_Oct_moderate.tif",
+ "2020 Dec":       AOUT/"ash_analysis/ASHMASK_2020_Dec_moderate.tif",
+ "2022 Nov":       AOUT/"ash_analysis/ASHMASK_2022_Nov_moderate.tif",
+ "2023 PAROXYSM":  AOUT/"ash_analysis/ASHMASK_2023_PAROXYSM_moderate.tif",
+}
+def load_mask_on_ref(f):
+    with rasterio.open(f) as s:
+        a=(s.read(1).astype("float32")==1).astype("float32")
+        d=np.full((rows,cols),0.0,"float32")
+        reproject(a,d,src_transform=s.transform,src_crs=s.crs,dst_transform=tr,dst_crs=crs,resampling=Resampling.nearest)
+    return d>0.5
+n_flagged=np.stack([load_mask_on_ref(f) for f in ASH_MASKS.values()]).sum(axis=0)
+ash_ever=gm&(n_flagged>=1)
+print(f"ash-ever-flagged pixels: {ash_ever.sum():,} / {gm.sum():,} glacier ({100*ash_ever.sum()/gm.sum():.1f}%)")
+
 series=[]
 for d,f in dems:
     try:
@@ -85,13 +106,16 @@ for d,f in dems:
     nmad=1.4826*np.nanmedian(np.abs(stv-np.nanmedian(stv))) if stv.size>500 else 999
     anom=np.nanmedian(gv)
     if nmad>8 or abs(anom)>15: continue            # corrupt-DEM gate (8 m: 2nd-stage outlier rejection below handles residuals)
+    av=dh[ash_ever&np.isfinite(dh)]
+    anom_ash=float(np.nanmedian(av)) if av.size>=200 else np.nan
     seas="W" if (d.month>=11 or d.month<=4) else "S"
-    series.append((d,anom,seas))
+    series.append((d,anom,anom_ash,seas))
 
 # merge sub-scenes per date
 bd=defaultdict(list)
-for d,a,se in series: bd[d].append((a,se))
-series=sorted([(d,float(np.median([a for a,_ in v])),v[0][1]) for d,v in bd.items()])
+for d,a,aa,se in series: bd[d].append((a,aa,se))
+series=sorted([(d,float(np.median([a for a,_,_ in v])),
+                float(np.nanmedian([aa for _,aa,_ in v])),v[0][2]) for d,v in bd.items()])
 print(f"date-points after merge: {len(series)}")
 
 # ---- PER-SEASON OUTLIER REJECTION: deviate from own-season rolling median ----
@@ -104,8 +128,9 @@ def season_outliers(pts, w=7, k=3.0):
     nm=1.4826*np.median(np.abs(res-np.median(res)))
     return list(np.abs(res-np.median(res))<=k*max(nm,0.3))
 
-W=[(date2num(d),a,d) for d,a,se in series if se=="W"]
-S=[(date2num(d),a,d) for d,a,se in series if se=="S"]
+ash_by_date={d:aa for d,a,aa,se in series}
+W=[(date2num(d),a,d) for d,a,aa,se in series if se=="W"]
+S=[(date2num(d),a,d) for d,a,aa,se in series if se=="S"]
 kW=season_outliers([(x,a) for x,a,_ in W]); kS=season_outliers([(x,a) for x,a,_ in S])
 W_in=[p for p,k in zip(W,kW) if k]; W_out=[p for p,k in zip(W,kW) if not k]
 S_in=[p for p,k in zip(S,kS) if k]; S_out=[p for p,k in zip(S,kS) if not k]
@@ -114,13 +139,16 @@ print(f"summer: {len(S_in)} kept, {len(S_out)} outliers removed")
 for x,a,d in W_out+S_out: print(f"  OUTLIER {d}: {a:+.2f} m")
 
 # CSV for downstream climate step
+def ash_s(d):
+    aa=ash_by_date.get(d,np.nan)
+    return "" if not np.isfinite(aa) else f"{aa:.3f}"
 with open(AOUT/"glacier_median_series.csv","w",newline="") as fo:
-    wcsv=csv.writer(fo,lineterminator="\n"); wcsv.writerow(["date","season","anom_m","kept"])
-    for x,a,d in W_in: wcsv.writerow([d.isoformat(),"W",f"{a:.3f}",1])
-    for x,a,d in W_out: wcsv.writerow([d.isoformat(),"W",f"{a:.3f}",0])
-    for x,a,d in S_in: wcsv.writerow([d.isoformat(),"S",f"{a:.3f}",1])
-    for x,a,d in S_out: wcsv.writerow([d.isoformat(),"S",f"{a:.3f}",0])
-print("-> glacier_median_series.csv")
+    wcsv=csv.writer(fo,lineterminator="\n"); wcsv.writerow(["date","season","anom_m","anom_ash_m","kept"])
+    for x,a,d in W_in: wcsv.writerow([d.isoformat(),"W",f"{a:.3f}",ash_s(d),1])
+    for x,a,d in W_out: wcsv.writerow([d.isoformat(),"W",f"{a:.3f}",ash_s(d),0])
+    for x,a,d in S_in: wcsv.writerow([d.isoformat(),"S",f"{a:.3f}",ash_s(d),1])
+    for x,a,d in S_out: wcsv.writerow([d.isoformat(),"S",f"{a:.3f}",ash_s(d),0])
+print("-> glacier_median_series.csv (with ash-restricted anom_ash_m column)")
 
 # ---- fits ----
 def linfit(pts):

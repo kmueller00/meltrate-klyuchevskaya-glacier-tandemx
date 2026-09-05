@@ -18,7 +18,7 @@ from datetime import date
 from pathlib import Path
 from rasterio.warp import reproject, Resampling
 from scipy import ndimage
-from s2_util import ndsi_bright
+from s2_util import ndsi_bright, fetch_tci
 
 BASE=Path("/media/saturn/01_TDX_data/utm_CP30/10_NAS/reg_utm57_N_b/DEM-utm57_N_b")
 AOUT=Path("/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/prc07_overview_out/RESULTS_presentation/ash_analysis")
@@ -37,6 +37,9 @@ def dem_path(dstr):
             if g: return g[0]
 
 shp=gpd.read_file(GLINV).to_crs(crs)
+gb=shp.total_bounds  # minx,miny,maxx,maxy
+ZOOM_BUF=800.0  # metres of context around the glacier, not the full scene extent
+zxlim=(gb[0]-ZOOM_BUF, gb[2]+ZOOM_BUF); zylim=(gb[1]-ZOOM_BUF, gb[3]+ZOOM_BUF)
 allrows=[]
 for lab,pre,post,ED in BRACKETS:
     fA=dem_path(post); fB=dem_path(pre)
@@ -58,6 +61,7 @@ for lab,pre,post,ED in BRACKETS:
     ndB,_  =ndsi_bright(pre, rows,cols,tr,crs,erupt_date=ED,side="pre", gm=gm,label=f"{lab} pre")
     if ndA is None or ndB is None: print(f"{lab}: S2 fail"); continue
     dn=ndA-ndB
+    tci=fetch_tci(post,rows,cols,tr,crs,erupt_date=ED,side="post",label=f"{lab} post")
     masks={}
     for nm,thr_dn,thr_na,pct,morph in SETTINGS:
         br_thr=np.nanpercentile(brA[gm&np.isfinite(brA)],pct)
@@ -81,11 +85,16 @@ for lab,pre,post,ED in BRACKETS:
     mask_cols=["#39a339","#c9a227","#b05ab0"]
     for i,((nm,_,_,_,_),col) in enumerate(zip(SETTINGS,mask_cols)):
         axi=fig.add_subplot(gs[i])
-        axi.imshow(ndA,cmap='RdBu',vmin=-0.5,vmax=1,extent=ext)
+        if tci is not None:
+            axi.imshow(tci,extent=ext)
+        else:
+            axi.imshow(ndA,cmap='RdBu',vmin=-0.5,vmax=1,extent=ext)
         if masks[nm].any():
             axi.contourf(np.flipud(masks[nm].astype(float)),levels=[.5,1.5],colors=[col],
                          alpha=0.55,extent=ext)
             axi.contour(np.flipud(masks[nm].astype(float)),levels=[.5],colors=col,linewidths=1.3,extent=ext)
+        shp.boundary.plot(ax=axi,color='black',linewidth=1.0,zorder=5)
+        axi.set_xlim(zxlim); axi.set_ylim(zylim)
         r=[x for x in allrows if x[0]==lab and x[1]==nm][0]
         axi.set_title(f"{nm}\n{r[3]:.0f} km², anomaly {r[4]:+.2f} m",color=col,fontweight="bold")
         axi.set_xticks([]); axi.set_yticks([])

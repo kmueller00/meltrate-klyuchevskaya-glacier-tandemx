@@ -90,6 +90,25 @@ def build(season):
         maps[(ya,yb)]=(np.where(gm,rate,np.nan),med,nmad)
     return maps,tr,(xmin,xmax,ymin,ymax),gm
 
+def add_north_arrow(ax, x=0.08, y=0.86):
+    """UTM is north-up at this scale (convergence angle at 56N/zone57 is well
+    under 2 degrees, invisible on a panel this size) -- a plain up-arrow is
+    cartographically fine here, no declination correction needed."""
+    ax.annotate("N", xy=(x,y), xytext=(x,y-0.14), xycoords="axes fraction",
+                ha="center", va="center", fontsize=11, fontweight="bold",
+                arrowprops=dict(arrowstyle="-|>", lw=1.6, color="k"))
+
+def add_scale_bar(ax, xmin, xmax, ymin, ymax, length_m=2000):
+    """Manual scale bar (matplotlib has no built-in one) in the map's own
+    projected units (EPSG:32657 is metric), placed bottom-right."""
+    x1=xmax-0.06*(xmax-xmin); x0=x1-length_m
+    y0=ymin+0.07*(ymax-ymin)
+    ax.plot([x0,x1],[y0,y0],color="k",lw=2.2,solid_capstyle="butt")
+    ax.plot([x0,x0],[y0-0.015*(ymax-ymin),y0+0.015*(ymax-ymin)],color="k",lw=1.4)
+    ax.plot([x1,x1],[y0-0.015*(ymax-ymin),y0+0.015*(ymax-ymin)],color="k",lw=1.4)
+    ax.text((x0+x1)/2,y0+0.025*(ymax-ymin),f"{length_m/1000:.0f} km",
+            ha="center",va="bottom",fontsize=8)
+
 for season in ("summer","winter"):
     maps,tr,ext,gm=build(season)
     if not maps: continue
@@ -103,12 +122,25 @@ for season in ("summer","winter"):
         ax=axes[k]
         im=ax.imshow(rate,cmap="RdBu",vmin=-CLIP,vmax=CLIP,extent=[xmin,xmax,ymin,ymax])
         ax.set_title(f"{ya}→{yb}   {med:+.2f} m/yr",fontsize=10)
-        ax.set_xticks([]); ax.set_yticks([])
+        # UTM-metre gridlines with compact km labels, kept only on the outer
+        # edge panels so the grid is visible without cluttering every subplot
+        ax.grid(True,color="k",alpha=0.25,linewidth=0.6)
+        ax.set_xticks(np.linspace(xmin,xmax,4)); ax.set_yticks(np.linspace(ymin,ymax,4))
+        row_k,col_k=divmod(k,ncol)
+        if row_k==nrow-1: ax.set_xticklabels([f"{v/1000:.0f}" for v in ax.get_xticks()],fontsize=7)
+        else: ax.set_xticklabels([])
+        if col_k==0: ax.set_yticklabels([f"{v/1000:.0f}" for v in ax.get_yticks()],fontsize=7)
+        else: ax.set_yticklabels([])
+        ax.tick_params(length=2)
+        if k==0:
+            add_north_arrow(ax)
+            add_scale_bar(ax,xmin,xmax,ymin,ymax)
         prof=dict(driver="GTiff",height=rate.shape[0],width=rate.shape[1],count=1,dtype="float32",
                   crs=crs,transform=tr,nodata=-9999.0,compress="lzw")
         with rasterio.open(AOUT/f"RATE_{season}_{ya}_{yb}.tif","w",**prof) as dd:
             dd.write(np.where(np.isfinite(rate),rate,-9999.0).astype("float32"),1)
     for k in range(n,len(axes)): axes[k].axis('off')
+    fig.supxlabel("UTM easting [km]",fontsize=9); fig.supylabel("UTM northing [km]",fontsize=9)
     cb=fig.colorbar(im,ax=axes.tolist(),shrink=0.6,label="elevation-change rate [m yr$^{-1}$]")
     fig.suptitle(f"Klyuchevskaya glaciers — {season.upper()}–to–{season.upper()} elevation–change rate (ascending 155)\n"
                  f"season–matched consecutive–year pairs; blue=gain red=loss",fontsize=13)

@@ -17,16 +17,25 @@ sign in deep winter -- an insulated surface radiating less waste heat than
 bare, actively-melting ice would in summer.
 
 Method: Landsat 8/9 Collection-2 surface temperature (lwir11), same
-scale/QA handling as scripts 36/37, composited per ASTRONOMICAL SEASON
-(DJF/MAM/JJA/SON, all years pooled per season for enough cloud-free
-coverage) rather than just winter. Compared elevation-band-controlled
-(200 m bands, same convention as script 28/36/37) between three ash/debris
-classes already established in script 35: "persistent" (flagged in >=3/4
-eruption masks -- mostly the low-tongue snowmelt-timing artifact, not real
-tephra), "eruption-specific" (flagged in exactly 1/4 -- likely real tephra),
-and "never" (clean ice, the baseline).
+scale/QA handling as scripts 36/37, composited per CALENDAR MONTH (all years
+2013-2026 pooled per month -- monthly rather than seasonal resolution, per
+explicit request, to see the transition shape rather than 4 coarse bins)
+rather than just winter. Compared elevation-band-controlled (200 m bands,
+same convention as script 28/36/37) between three ash/debris classes already
+established in script 35: "persistent" (flagged in >=3/4 eruption masks --
+mostly the low-tongue snowmelt-timing artifact, not real tephra),
+"eruption-specific" (flagged in exactly 1/4 -- likely real tephra), and
+"never" (clean ice, the baseline).
 
-Outputs: THERMAL_vs_ASHDEBRIS_seasonal.png, THERMAL_vs_ASHDEBRIS_stats.csv
+Each month's anomaly is the mean, across elevation bands, of the per-band
+(class median - clean median) temperature difference. The 95% CI treats
+each elevation band's difference as one observation (bands are large,
+spatially separated regions -- a coarser but much cheaper stand-in for a
+full spatial block-bootstrap) and uses a t-distribution interval on the
+per-band anomalies; not meaningful with fewer than 3 bands (n<3 -> CI
+omitted, not zero-width).
+
+Outputs: THERMAL_vs_ASHDEBRIS_monthly.png, THERMAL_vs_ASHDEBRIS_stats.csv
 """
 import sys; sys.path.insert(0,"/home/student/Desktop/_0_Korbinian_TANDEM-X/_code/code/ash_analysis"); import _style
 import glob, csv, numpy as np, rasterio, rasterio.features, geopandas as gpd
@@ -34,6 +43,7 @@ import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from pathlib import Path
 from rasterio.warp import reproject, Resampling
 import pystac_client, planetary_computer, odc.stac
+from scipy import stats
 from s2_util import QA_EXCLUDE_MASK
 import warnings; warnings.filterwarnings("ignore")
 
@@ -55,7 +65,16 @@ CAT=pystac_client.Client.open('https://planetarycomputer.microsoft.com/api/stac/
                               modifier=planetary_computer.sign_inplace)
 ST_SCALE,ST_OFFSET=0.00341802,149.0
 
-SEASONS={"DJF":(12,1,2),"MAM":(3,4,5),"JJA":(6,7,8),"SON":(9,10,11)}
+MONTHS=[("Jan",[1]),("Feb",[2]),("Mar",[3]),("Apr",[4]),("May",[5]),("Jun",[6]),
+        ("Jul",[7]),("Aug",[8]),("Sep",[9]),("Oct",[10]),("Nov",[11]),("Dec",[12])]
+
+def mean_ci95(vals):
+    """95% CI on the mean via a t-interval over per-elevation-band anomalies
+    (each band treated as one observation -- see module docstring)."""
+    n=len(vals)
+    if n<3: return np.nan
+    sem=np.std(vals,ddof=1)/np.sqrt(n)
+    return float(stats.t.ppf(0.975,df=n-1)*sem)
 
 # ---- (0) grid, glacier mask, elevation (full-grid mosaic, debiased -- see script 36/37) ----
 with rasterio.open(RATE_TIF) as s:
@@ -125,17 +144,20 @@ def fetch_thermal_season(months):
     return out_t,out_n
 
 bands=np.arange(1000,4600,200)
-season_class_anom={}   # (season,class) -> mean elevation-controlled anomaly [C]
+month_class_anom={}   # (month,class) -> (mean anomaly [C], ci95 half-width or nan)
 rows_out=[]
-for sname,months in SEASONS.items():
-    print(f"\n=== {sname} ===")
+for mname,months in MONTHS:
+    print(f"\n=== {mname} ===")
     temp_k,n_obs=fetch_thermal_season(months)
     if temp_k is None:
         print("  no data, skipped"); continue
     temp_c=temp_k-273.15
     valid_t=np.isfinite(temp_k)&(n_obs>=3)&np.isfinite(elev)
     print(f"  valid px (>=3 obs): {valid_t.sum():,}")
-    for cname,cmask in [("persistent",persistent),("eruption_specific",specific),("never",never)]:
+    for cname,cmask in [("persistent",persistent),("eruption_specific",specific)]:
+        # "never" (clean ice) is the reference class itself -- r_px=inb&never&(~cmask)
+        # would reduce to inb&never&(~never)=empty if cname=="never" here, so it's
+        # excluded from the loop rather than silently producing an all-NaN row.
         anoms=[]
         for b0 in bands:
             b1=b0+200
@@ -144,25 +166,37 @@ for sname,months in SEASONS.items():
             if c_px.sum()<10 or r_px.sum()<20: continue
             anoms.append(np.nanmedian(temp_c[c_px])-np.nanmedian(temp_c[r_px]))
         m=float(np.mean(anoms)) if anoms else np.nan
-        season_class_anom[(sname,cname)]=m
-        print(f"  {cname:18s}: elevation-controlled anomaly vs clean = {m:+.2f}C  (n_bands={len(anoms)})")
-        rows_out.append((sname,cname,m,len(anoms)))
+        ci=mean_ci95(anoms) if anoms else np.nan
+        month_class_anom[(mname,cname)]=(m,ci)
+        ci_s=f"+/-{ci:.2f}" if np.isfinite(ci) else "n/a"
+        print(f"  {cname:18s}: elevation-controlled anomaly vs clean = {m:+.2f}C {ci_s} (95% CI)  (n_bands={len(anoms)})")
+        rows_out.append((mname,cname,m,ci,len(anoms)))
 
 with open(AOUT/"ash_analysis/THERMAL_vs_ASHDEBRIS_stats.csv","w",newline="") as f:
-    w=csv.writer(f); w.writerow(["season","class","elevation_controlled_anomaly_C","n_elev_bands"])
+    w=csv.writer(f)
+    w.writerow(["month","class","elevation_controlled_anomaly_C","ci95_halfwidth_C","n_elev_bands"])
     for r in rows_out: w.writerow(r)
 print("\n-> THERMAL_vs_ASHDEBRIS_stats.csv")
 
-# ---- figure: seasonal curve, one line per class ----
-fig,ax=plt.subplots(figsize=(9,6))
-order=["DJF","MAM","JJA","SON"]
-colors={"persistent":"#a8481f","eruption_specific":"#2c7bb6","never":"#999999"}
+# ---- figure: monthly curve, one line per class, with 95% CI error bars ----
+fig,ax=plt.subplots(figsize=(11,6))
+order=[m for m,_ in MONTHS]
+colors={"persistent":"#a8481f","eruption_specific":"#2c7bb6"}
+x=np.arange(len(order))
+offsets={"persistent":-0.06,"eruption_specific":0.06}
 for cname,col in colors.items():
-    y=[season_class_anom.get((s,cname),np.nan) for s in order]
-    ax.plot(order,y,"o-",color=col,label=cname.replace("_"," "),linewidth=2,markersize=8)
+    y=np.array([month_class_anom.get((m,cname),(np.nan,np.nan))[0] for m in order])
+    yerr=np.array([month_class_anom.get((m,cname),(np.nan,np.nan))[1] for m in order])
+    yerr=np.where(np.isfinite(yerr),yerr,0.0)
+    ax.errorbar(x+offsets[cname],y,yerr=yerr,fmt="o-",color=col,
+                label=cname.replace("_"," "),linewidth=2,markersize=6,
+                capsize=3,elinewidth=1.2)
 ax.axhline(0,color="k",lw=0.8,ls="--")
+ax.set_xticks(x); ax.set_xticklabels(order)
 ax.set_ylabel("elevation-controlled thermal anomaly vs clean ice [C]")
-ax.set_title("Ash/debris thermal signature across the year\n(Landsat 8/9 surface temperature, all years pooled per season)")
+ax.set_title("Ash/debris thermal signature across the year, monthly\n"
+              "(Landsat 8/9 surface temperature, all years 2013-2026 pooled per month; "
+              "error bars = 95% CI across elevation bands)")
 ax.legend(); ax.grid(alpha=0.3)
-fig.tight_layout(); fig.savefig(AOUT/"ash_analysis/THERMAL_vs_ASHDEBRIS_seasonal.png",dpi=300,bbox_inches="tight")
-print("-> THERMAL_vs_ASHDEBRIS_seasonal.png")
+fig.tight_layout(); fig.savefig(AOUT/"ash_analysis/THERMAL_vs_ASHDEBRIS_monthly.png",dpi=300,bbox_inches="tight")
+print("-> THERMAL_vs_ASHDEBRIS_monthly.png")
