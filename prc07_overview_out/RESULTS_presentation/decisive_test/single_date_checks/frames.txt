@@ -1,0 +1,20 @@
+2019_Oct pre frames 2 post frames 2 | glob order pre: ['065927', '065933']
+  pre 2019-09-27_065927 post 2020-09-02_065934: ash -0.09 clean +0.27 D_raw -0.36 [-0.73,-0.04] D_elev +0.42 [+0.07,+0.71] n_ash 12902 matched 0.99 NMAD 1.76
+  pre 2019-09-27_065927 post 2020-09-02_065940: ash -0.15 clean -0.11 D_raw -0.04 [-0.36,+0.33] D_elev +0.61 [-0.13,+1.30] n_ash 9851 matched 0.99 NMAD 2.16
+  pre 2019-09-27_065933 post 2020-09-02_065934: ash -1.03 clean -0.68 D_raw -0.35 [-0.85,+0.10] D_elev -0.00 [-0.65,+0.49] n_ash 9745 matched 0.99 NMAD 2.22
+  pre 2019-09-27_065933 post 2020-09-02_065940: ash -0.13 clean -0.00 D_raw -0.13 [-0.53,+0.23] D_elev +0.15 [-1.69,+0.88] n_ash 32055 matched 1.00 NMAD 1.80
+2020_Dec pre frames 2 post frames 2 | glob order pre: ['065934', '065941']
+  pre 2020-09-24_065934 post 2021-08-31_065940: ash +0.33 clean +1.40 D_raw -1.07 [-1.35,-0.79] D_elev -0.12 [-0.33,+0.07] n_ash 35298 matched 1.00 NMAD 1.00
+  pre 2020-09-24_065934 post 2021-08-31_065946: ash +0.09 clean +1.77 D_raw -1.68 [-2.13,-1.30] D_elev -0.21 [-0.43,+0.01] n_ash 26112 matched 1.00 NMAD 1.44
+  pre 2020-09-24_065941 post 2021-08-31_065940: ash -0.07 clean +1.27 D_raw -1.34 [-1.72,-1.03] D_elev -0.55 [-0.84,+0.07] n_ash 25294 matched 1.00 NMAD 1.47
+  pre 2020-09-24_065941 post 2021-08-31_065946: ash +0.17 clean +1.73 D_raw -1.57 [-1.94,-1.24] D_elev +0.05 [-0.20,+0.29] n_ash 49492 matched 1.00 NMAD 1.14
+2022_Nov pre frames 2 post frames 2 | glob order pre: ['065947', '065954']
+  pre 2022-10-01_065947 post 2023-08-05_065951: ash -1.89 clean -2.86 D_raw +0.96 [+0.23,+1.71] D_elev +0.44 [-0.28,+0.97] n_ash 54637 matched 1.00 NMAD 7.35
+  pre 2022-10-01_065947 post 2023-08-05_065957: ash -5.36 clean -5.95 D_raw +0.58 [-0.44,+1.45] D_elev -1.30 [-2.27,-0.48] n_ash 46349 matched 1.00 NMAD 8.43
+  pre 2022-10-01_065954 post 2023-08-05_065951: ash -4.64 clean -6.38 D_raw +1.74 [+0.47,+3.21] D_elev +0.29 [-0.51,+0.98] n_ash 44840 matched 1.00 NMAD 8.65
+  pre 2022-10-01_065954 post 2023-08-05_065957: ash -4.87 clean -5.07 D_raw +0.20 [-0.66,+1.15] D_elev -1.14 [-1.62,-0.65] n_ash 64098 matched 1.00 NMAD 6.64
+2023_PAROXYSM pre frames 2 post frames 2 | glob order pre: ['065954', '070000']
+  pre 2023-09-29_065954 post 2024-09-04_065957: ash -0.52 clean -2.74 D_raw +2.22 [+1.70,+2.75] D_elev +0.16 [-0.18,+0.59] n_ash 8839 matched 0.74 NMAD 3.59
+  pre 2023-09-29_065954 post 2024-09-04_070003: ash -1.09 clean -3.24 D_raw +2.15 [+1.49,+2.81] D_elev +0.12 [-0.49,+0.85] n_ash 7068 matched 0.76 NMAD 4.34
+  pre 2023-09-29_070000 post 2024-09-04_065957: ash -1.55 clean -4.03 D_raw +2.48 [+1.72,+3.19] D_elev -0.20 [-0.92,+0.95] n_ash 7396 matched 0.76 NMAD 4.47
+  pre 2023-09-29_070000 post 2024-09-04_070003: ash -0.93 clean -2.95 D_raw +2.02 [+1.20,+2.68] D_elev -0.86 [-1.92,+0.09] n_ash 23923 matched 1.00 NMAD 3.63
