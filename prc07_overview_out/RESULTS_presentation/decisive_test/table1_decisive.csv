@@ -1,6 +1,7 @@
-target,pair,published_single_date_raw_D,composite_raw_D,composite_matched_D,D_lo,D_hi,placebo_min,placebo_max,protocol_verdict,note
-2019 Oct,2019-2020,-0.04,-0.01,-0.21,-1.57,0.40,-0.95,0.51,NOT DETECTED,
-2020 Dec,2020-2021,-1.07,-0.73,-0.10,-0.19,0.14,-0.70,0.73,NOT DETECTED,
-2022 Nov,2022-2023,0.58,0.94,-1.51,-2.15,-0.89,-0.39,1.89,CONFIRMED,Artefact: 2 of 3 dates in the 2022 epoch are faulty. Skipping 2022 (2021-2023): +0.08 [-0.20 +0.37]
-2023 paroxysm Y1,2023-2024,2.22,-0.11,0.13,-0.28,0.71,-4.06,3.90,NOT DETECTED,Placebo without pairs touching 2022: -0.44 to +0.48
-2023 paroxysm Y2,2024-2025,-2.46,0.07,-0.41,-1.50,0.23,-4.06,3.90,NOT DETECTED,Placebo without pairs touching 2022: -0.44 to +0.48
+target,pair,published_single_date_raw_D,v1_composite_raw_D,v1_late_summer_mask_D,v1_lo,v1_hi,v2_post_eruption_mask_D,v2_lo,v2_hi,v2_ash_km2,final_outcome,note
+2019 Oct,2019-2020,-0.04,-0.01,-0.21,-1.57,0.40,,,,0.0,Not detected; post-eruption mask not testable,
+2020 Dec,2020-2021,-1.07,-0.73,-0.10,-0.19,0.14,,,,0.2,Not detected; post-eruption mask not testable,
+2022 Nov,2022-2023,0.58,0.94,-1.51,-2.15,-0.89,1.54,-1.26,2.85,0.9,Not detected,v1 met the rules but traced to a faulty 2022 epoch; v2 uses the epoch rule
+2022 Nov skipping 2022,2021-2023,,0.19,0.08,-0.20,0.37,0.73,-0.65,1.74,0.9,No signal,two-year pair
+2023 paroxysm Y1,2023-2024,2.22,-0.11,0.13,-0.28,0.71,-0.05,-0.29,0.21,25.2,Not detected,
+2023 paroxysm Y2,2024-2025,-2.46,0.07,-0.41,-1.50,0.23,0.10,-0.73,1.04,25.2,Not detected,

@@ -8,14 +8,16 @@ Do volcanic eruptions at Klyuchevskaya (Kamchatka, 56.0°N) change how fast its 
 
 **Correction, November 2026.** Earlier versions of this repo reported +2.22 m of retained elevation on ash-covered ice after the 2023 paroxysm, reversing to −2.46 m a year later. Those numbers reproduce, but they come from single DEM dates and compare low ash-covered ice with high clean ice. They do not survive a stricter test, specified in advance (`code/decisive_test/PROTOCOL.md`), using multi-date composites, comparison at equal elevation and pre-eruption control years.
 
-| Target | Earlier report | Composite, equal elevation [95% CI] | Outcome |
-|---|---|---|---|
-| 2019 Oct | −0.04 m | −0.21 [−1.57, +0.40] | Not detected |
-| 2020 Dec | −1.07 m | −0.10 [−0.19, +0.14] | Not detected |
-| 2022 Nov | +0.58 m | −1.51 [−2.15, −0.89] | Met the rules; judged an artefact of a faulty 2022 DEM epoch |
-| 2022 Nov, skipping 2022 (post hoc) | | +0.08 [−0.20, +0.37] | No signal |
-| 2023 paroxysm, year 1 | +2.22 m | +0.13 [−0.28, +0.71] | Not detected |
-| 2023 paroxysm, year 2 | −2.46 m | −0.41 [−1.50, +0.23] | Not detected |
+| Target | Earlier report | Late-summer mask [95% CI] | Post-eruption mask [95% CI] | Outcome |
+|---|---|---|---|---|
+| 2019 Oct | −0.04 m | −0.21 [−1.57, +0.40] | not testable (0.0 km²) | Not detected |
+| 2020 Dec | −1.07 m | −0.10 [−0.19, +0.14] | not testable (0.2 km²) | Not detected |
+| 2022 Nov | +0.58 m | −1.51 [−2.15, −0.89] | +1.54 [−1.26, +2.85]; 0.9 km² | Late-summer: met the rules, judged an artefact of a faulty 2022 epoch. Post-eruption: not detected |
+| 2022 Nov, skipping 2022 | | +0.08 [−0.20, +0.37] | +0.73 [−0.65, +1.74] | No signal |
+| 2023 paroxysm, year 1 | +2.22 m | +0.13 [−0.28, +0.71] | −0.05 [−0.29, +0.21]; 25 km² | Not detected |
+| 2023 paroxysm, year 2 | −2.46 m | −0.41 [−1.50, +0.23] | +0.10 [−0.73, +1.04]; 25 km² | Not detected |
+
+**Ash-mask limitation.** The late-summer masks come from imagery about 10 months after each eruption, flag mainly low glacier tongues and can label buried ash as clean ice. The post-eruption masks (snow by NDSI before the eruption, no snow in the first clear image after it) map 2023 well, on the upper flanks, but almost nothing for the other eruptions, which remain poorly tested.
 
 Smaller effects cannot be excluded, and the 2015 eruption was not part of this test.
 

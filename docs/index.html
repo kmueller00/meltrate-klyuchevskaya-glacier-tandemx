@@ -91,8 +91,8 @@ ul.plain li{margin:5px 0}
 
   <div class="keyfigs">
     <div class="kf"><span class="n neg">-0.36&nbsp;m/yr</span><span class="l">summer thinning trend 2012 to 2025 (&plusmn;0.06, 95% CI)</span></div>
-    <div class="kf"><span class="n">+0.13&nbsp;m</span><span class="l">2023 paroxysm, year 1, ash vs. clean at equal elevation (95% CI -0.28 to +0.71)</span></div>
-    <div class="kf"><span class="n">0 of 4</span><span class="l">eruptions with a credible signal in the pre-specified test</span></div>
+    <div class="kf"><span class="n">-0.05&nbsp;m</span><span class="l">2023 paroxysm, year 1, ash vs. clean at equal elevation, post-eruption ash mask (95% CI -0.29 to +0.21)</span></div>
+    <div class="kf"><span class="n">0</span><span class="l">credible eruption signals, with either ash mask; only 2023 could be mapped well</span></div>
     <div class="kf"><span class="n">308</span><span class="l">usable DEMs, 2012 to 2025, track 155</span></div>
   </div>
 </header>
@@ -102,18 +102,19 @@ ul.plain li{margin:5px 0}
   <p class="lead">The eruption results in earlier versions came from differencing one DEM date against another and comparing ash-covered ice with clean ice regardless of elevation. Ash lies low on the cone and clean ice high (2023: median 1761 and 2719&nbsp;m), so elevation effects were mixed into the signal. The 2023 reversal also depended on the DEM of 2024-09-04, which this project's own outlier gate had rejected.</p>
   <p>The new test was written down before it was computed. Each year's August&ndash;September DEMs were merged into a per-pixel median composite, aligned to one fixed elevation reference, and ash and clean ice were compared within 200&nbsp;m elevation bands. An eruption counts as confirmed only if four conditions hold: the 95% interval (1.5&nbsp;km tile bootstrap) excludes zero; the sign is stable across five processing variants; removing any one DEM date does not change the sign; and the value lies outside the range the same mask gives in pre-eruption years.</p>
   <table class="stt">
-    <thead><tr><th>Target</th><th class="num">Earlier report</th><th class="num">Composite, equal elevation [95% CI]</th><th>Outcome</th></tr></thead>
+    <thead><tr><th>Target</th><th class="num">Earlier report</th><th class="num">Late-summer mask [95% CI]</th><th class="num">Post-eruption mask [95% CI]</th><th>Outcome</th></tr></thead>
     <tbody>
-      <tr><td>2019 Oct</td><td class="num">-0.04</td><td class="num">-0.21 [-1.57, +0.40]</td><td>Not detected</td></tr>
-      <tr><td>2020 Dec</td><td class="num">-1.07</td><td class="num">-0.10 [-0.19, +0.14]</td><td>Not detected</td></tr>
-      <tr><td>2022 Nov</td><td class="num">+0.58</td><td class="num">-1.51 [-2.15, -0.89]</td><td>Met the rules; judged a faulty-data artefact</td></tr>
-      <tr><td>2022 Nov, skipping the 2022 epoch (2021&rarr;2023)</td><td class="num">&mdash;</td><td class="num">+0.08 [-0.20, +0.37]</td><td>Post-hoc check: no signal</td></tr>
-      <tr><td>2023 paroxysm, year 1</td><td class="num">+2.22</td><td class="num">+0.13 [-0.28, +0.71]</td><td>Not detected</td></tr>
-      <tr><td>2023 paroxysm, year 2</td><td class="num">-2.46</td><td class="num">-0.41 [-1.50, +0.23]</td><td>Not detected</td></tr>
+      <tr><td>2019 Oct</td><td class="num">-0.04</td><td class="num">-0.21 [-1.57, +0.40]</td><td class="num">not testable (0.0&nbsp;km&sup2;)</td><td>Not detected</td></tr>
+      <tr><td>2020 Dec</td><td class="num">-1.07</td><td class="num">-0.10 [-0.19, +0.14]</td><td class="num">not testable (0.2&nbsp;km&sup2;)</td><td>Not detected</td></tr>
+      <tr><td>2022 Nov</td><td class="num">+0.58</td><td class="num">-1.51 [-2.15, -0.89]</td><td class="num">+1.54 [-1.26, +2.85]; 0.9&nbsp;km&sup2;</td><td>Late-summer: met the rules, judged a faulty-data artefact. Post-eruption: not detected</td></tr>
+      <tr><td>2022 Nov, skipping the 2022 epoch (2021&rarr;2023)</td><td class="num">&mdash;</td><td class="num">+0.08 [-0.20, +0.37]</td><td class="num">+0.73 [-0.65, +1.74]</td><td>No signal</td></tr>
+      <tr><td>2023 paroxysm, year 1</td><td class="num">+2.22</td><td class="num">+0.13 [-0.28, +0.71]</td><td class="num">-0.05 [-0.29, +0.21]; 25&nbsp;km&sup2;</td><td>Not detected</td></tr>
+      <tr><td>2023 paroxysm, year 2</td><td class="num">-2.46</td><td class="num">-0.41 [-1.50, +0.23]</td><td class="num">+0.10 [-0.73, +1.04]; 25&nbsp;km&sup2;</td><td>Not detected</td></tr>
     </tbody>
   </table>
+  <p><b class="lede">The ash masks are a real limitation.</b> The late-summer masks come from imagery about 10 months after each eruption. They flag mainly low glacier tongues (89% of the 2023 mask lies below 2000&nbsp;m), repeat across eruptions (65% of it is flagged in at least three of the four) and can label buried ash as clean ice. A second mask was therefore built under a further pre-specified protocol: snow (NDSI&nbsp;&ge;&nbsp;0.4) in the last clear Sentinel-2 image before the eruption and no snow in the first clear image after it, when melt cannot mimic the change. For 2023 this maps 25&nbsp;km&sup2; on the upper flanks that overlaps the earlier mask by only 9%, and it shows no signal in either year. For 2019, 2020 and 2022 almost no ash could be mapped this way, so those eruptions remain poorly tested.</p>
   <p><b class="lede">Why 2022 is treated as an artefact.</b> The 2022 result met all four rules, and it is reported here as such. However, the preceding year pair is almost its mirror image (+1.89&nbsp;m), and all four ash masks show the same mirror around 2022. Two of the three dates in the 2022 epoch survive only as small sub-frames with stable-terrain noise of 6 to 7&nbsp;m (1.2 to 1.9&nbsp;m in 2021) and read about 4&nbsp;m too high. Comparing 2021 with 2023 directly, which skips that epoch, gives no signal. That comparison was added after seeing the result and is labelled accordingly.</p>
-  <p><b class="lede">What this does not show.</b> It does not show that eruptions have no effect. Effects smaller than the intervals above cannot be excluded, and those intervals are wide for 2019 and 2023. The 2023 estimates have the signs expected from tephra first insulating and then enhancing melt, but they are not distinguishable from zero. The 2015 eruption was not part of this test. Older eruption sections below are kept for transparency and marked as superseded. Protocol, code and results: <code>code/decisive_test/</code> and <code>RESULTS_presentation/decisive_test/</code>.</p>
+  <p><b class="lede">What this does not show.</b> It does not show that eruptions have no effect. Effects smaller than the intervals above cannot be excluded: a tephra layer centimetres thick would add far less height than they can resolve, and the ash extent is known well only for 2023. The 2015 eruption was not part of this test. Older eruption sections below are kept for transparency and marked as superseded. Protocol, code and results: <code>code/decisive_test/</code> and <code>RESULTS_presentation/decisive_test/</code>.</p>
 </section>
 
 <section>
@@ -728,8 +729,8 @@ ul.plain li{margin:5px 0}
       inside that window and dominates it.</li>
       <li>Winter DEMs carry the radar-penetration bias (measured median -0.4&nbsp;m, year to year
       variable), shown for context and not used quantitatively across seasons.</li>
-      <li>The ash mask flags glacier that darkened and lost snow, which conflates fresh tephra with
-      interannual snowline retreat, since both sit low on this cone. This is why the single-date 2020 signal in particular should not be read as ash-driven melt.</li>
+      <li>The late-summer ash mask flags glacier that darkened and lost snow, which conflates fresh tephra with
+      interannual snowline retreat, since both sit low on this cone. It mainly finds the low tongues and can miss buried ash higher up (see the correction at the top). This is why the single-date 2020 signal in particular should not be read as ash-driven melt.</li>
       <li>The
       pixel-level, elevation-independent ash signal this section previously reported
       (partial r&nbsp;=&nbsp;+0.13) did not survive being tested on the full glacier: rerun with a

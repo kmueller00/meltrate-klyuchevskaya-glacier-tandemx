@@ -1,0 +1,47 @@
+Running on cores 0-3 with govenor powersave
+mask, ash km2, clean km2, excluded km2, ash median elev, ash% <2000/2000-3000/>3000, overlap with old strict ash %
+
+== 2019_Oct
+ PRE 2019-10-22: sun elev 22.4, new glacier px 154868, filled 68.9% | 2019-10-20: sun elev 23.3, new glacier px 19731, filled 77.6% | 2019-10-12: sun elev 26.0, new glacier px 8648, filled 81.5% | 2019-10-05: sun elev 28.8, new glacier px 6347, filled 84.3%
+ POST 2019-10-30: sun elev 19.9, new glacier px 158851, filled 70.6% | 2019-11-06: sun elev 17.5, new glacier px 2347, filled 71.7% | 2019-11-09: sun elev 16.9, new glacier px 1107, filled 72.2% | 2019-11-11: sun elev 16.0, new glacier px 131, filled 72.2% | 2019-11-14: sun elev 15.4, new glacier px 2, filled 72.2% | 2019-11-21: sun elev 13.6, new glacier px 0, filled 72.2% | 2019-11-26: sun elev 12.4, new glacier px 6, filled 72.2% | 2019-11-29: sun elev 12.2, new glacier px 0, filled 72.2%
+2019_Oct strict: ash 0.0 clean 140.7 excl 61.7 km2; med elev 1517; <2000 89% 2000-3000 11% >3000 0%; overlap with old ash 73%
+2019_Oct loose: ash 4.1 clean 136.8 excl 61.5 km2; med elev 1605; <2000 82% 2000-3000 9% >3000 9%; overlap with old ash 60%
+
+== 2020_Dec
+ PRE 2020-12-05: sun elev 10.8, new glacier px 83547, filled 37.1% | 2020-12-03: sun elev 11.3, new glacier px 2355, filled 38.2% | 2020-11-30: sun elev 11.7, new glacier px 1863, filled 39.0% | 2020-11-28: sun elev 12.1, new glacier px 3634, filled 40.6% | 2020-11-10: sun elev 16.1, new glacier px 34200, filled 55.8%
+ POST 2020-12-13: sun elev 10.2, new glacier px 81827, filled 36.4% | 2020-12-20: sun elev 9.6, new glacier px 2788, filled 37.6% | 2020-12-25: sun elev 9.6, new glacier px 370, filled 37.8% | 2021-01-02: sun elev 10.2, new glacier px 885, filled 38.2% | 2021-01-04: sun elev 10.1, new glacier px 2810, filled 39.4% | 2021-01-07: sun elev 10.9, new glacier px 967, filled 39.9% | 2021-01-14: sun elev 11.4, new glacier px 4855, filled 42.0%
+2020_Dec strict: ash 0.2 clean 76.0 excl 126.3 km2; med elev 3353; <2000 0% 2000-3000 30% >3000 70%; overlap with old ash 30%
+2020_Dec loose: ash 5.9 clean 70.5 excl 126.1 km2; med elev 3190; <2000 25% 2000-3000 24% >3000 51%; overlap with old ash 39%
+
+== 2022_Nov
+ PRE 2022-11-10: sun elev 16.4, new glacier px 14158, filled 6.3% | 2022-11-08: sun elev 17.0, new glacier px 130898, filled 64.5% | 2022-11-05: sun elev 17.7, new glacier px 5539, filled 67.0% | 2022-10-31: sun elev 19.3, new glacier px 3313, filled 68.4% | 2022-10-29: sun elev 20.1, new glacier px 9002, filled 72.4% | 2022-10-24: sun elev 21.8, new glacier px 7223, filled 75.6% | 2022-10-16: sun elev 24.6, new glacier px 2566, filled 76.8%
+ POST 2022-12-03: sun elev 11.3, new glacier px 63037, filled 28.0% | 2022-12-10: sun elev 10.3, new glacier px 26560, filled 39.8% | 2022-12-13: sun elev 10.3, new glacier px 103, filled 39.9% | 2022-12-28: sun elev 9.9, new glacier px 8478, filled 43.7%
+2022_Nov strict: ash 0.9 clean 81.8 excl 119.7 km2; med elev 2516; <2000 27% 2000-3000 44% >3000 29%; overlap with old ash 43%
+2022_Nov loose: ash 49.6 clean 34.5 excl 118.4 km2; med elev 2637; <2000 23% 2000-3000 50% >3000 27%; overlap with old ash 36%
+
+== 2023_PAROXYSM
+ PRE 2023-10-29: sun elev 20.2, new glacier px 162902, filled 72.4% | 2023-10-24: sun elev 22.0, new glacier px 1201, filled 73.0% | 2023-10-16: sun elev 24.5, new glacier px 15364, filled 79.8% | 2023-10-14: sun elev 25.5, new glacier px 3070, filled 81.2% | 2023-10-11: sun elev 26.4, new glacier px 1612, filled 81.9% | 2023-10-09: sun elev 27.4, new glacier px 581, filled 82.1% | 2023-10-06: sun elev 28.2, new glacier px 3149, filled 83.5%
+ POST 2023-11-03: sun elev 18.7, new glacier px 15581, filled 6.9% | 2023-11-08: sun elev 17.1, new glacier px 106072, filled 54.1% | 2023-11-10: sun elev 16.3, new glacier px 16445, filled 61.4% | 2023-11-13: sun elev 15.7, new glacier px 3, filled 61.4% | 2023-11-15: sun elev 14.9, new glacier px 6985, filled 64.5% | 2023-11-18: sun elev 14.4, new glacier px 170, filled 64.6% | 2023-11-23: sun elev 13.3, new glacier px 0, filled 64.6% | 2023-12-05: sun elev 11.1, new glacier px 0, filled 64.6%
+2023_PAROXYSM strict: ash 25.2 clean 78.2 excl 99.0 km2; med elev 2648; <2000 9% 2000-3000 57% >3000 35%; overlap with old ash 9%
+2023_PAROXYSM loose: ash 99.2 clean 12.9 excl 90.2 km2; med elev 2673; <2000 15% 2000-3000 55% >3000 31%; overlap with old ash 7%
+done
+=== JOB_STATISTICS ===
+=== current date     : Sun Nov  8 23:35:35 CET 2026
+= Job-ID             : 12870604 on woody
+= Job-Name           : masks_v2
+= Job-Command        : /home/saturn/gwgi/gwgifu0h/00_libs/paper_checks/decisive/v2/job_masks.sh
+= Initial workdir    : /home/hpc/gwgi/gwgifu0h
+= Queue/Partition    : work
+= Slurm account      : gwgi with QOS=normal
+= Requested resources:  for 00:40:00
+= Elapsed runtime    : 00:01:38
+= Total RAM usage    : 1.1 GiB of requested  GiB (%)   
+= Node list          : w1456
+= Subm/Elig/Start/End: 2026-11-08T23:33:56 / 2026-11-08T23:33:56 / 2026-11-08T23:33:57 / 2026-11-08T23:35:35
+======================
+=== Quota infos ======
+    Path                 Used     SoftQ    HardQ    Gracetime  Filec    FileQ    FiHaQ    FileGrace    
+    /home/woody             0.0K  1000.0G  1500.0G        N/A       1    5,000K   7,500K        N/A    
+    /home/hpc               9.0G   104.9G   209.7G        N/A     103K     500K   1,000K        N/A    
+    /home/vault           436.8T     0.0K     0.0K        N/A   1,777K   2,000K   3,000K        N/A    
+    /home/saturn           56.6T     0.0K     0.0K        N/A   3,823K                          N/A    

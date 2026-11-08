@@ -1,0 +1,54 @@
+grid (974, 962), stable pixels 674,374
+dates per epoch: {2012: 2, 2013: 5, 2014: 1, 2015: 6, 2016: 3, 2017: 2, 2018: 6, 2019: 2, 2020: 5, 2021: 4, 2022: 1, 2023: 5, 2024: 5, 2025: 4}
+
+===== 2019_Oct: ash 37 clean 156,308
+  no placebo
+  T: no result
+
+===== 2020_Dec: ash 168 clean 84,406
+  no placebo
+  T: no result
+
+===== 2022_Nov: ash 1,051 clean 90,861
+  2012->2013     D +0.20 [-0.48,+0.97]  D_raw +0.06  aspect +0.56  ash -0.61 clean -0.66  n_ash 1,017 matched 0.92
+  2013->2014     D -0.04 [-0.92,+0.70]  D_raw +0.17  aspect -0.23  ash +0.15 clean -0.02  n_ash 1,031 matched 0.94
+  2014->2015     D -0.56 [-1.44,+0.77]  D_raw +0.12  aspect -0.15  ash -1.80 clean -1.92  n_ash 1,017 matched 0.94
+  2015->2016     D +1.77 [+0.57,+2.76]  D_raw +0.80  aspect +1.25  ash +1.44 clean +0.64  n_ash 1,016 matched 0.95
+  2016->2017     D +0.13 [-2.16,+1.37]  D_raw +0.50  aspect +0.93  ash -0.12 clean -0.62  n_ash 1,025 matched 0.95
+  2017->2018     D +0.45 [-0.79,+1.20]  D_raw +0.15  aspect +0.33  ash -0.47 clean -0.62  n_ash 1,034 matched 0.94
+  2018->2019     D +0.26 [-0.25,+1.83]  D_raw +0.19  aspect +0.62  ash +0.23 clean +0.04  n_ash 1,026 matched 0.92
+  2019->2020     D +0.65 [-0.31,+1.39]  D_raw +0.49  aspect +0.93  ash +0.23 clean -0.25  n_ash 1,026 matched 0.92
+  2020->2021     D -0.26 [-0.85,-0.02]  D_raw -0.52  aspect +0.24  ash -0.02 clean +0.50  n_ash 1,035 matched 0.95
+  2021->2022     D -0.03 [-0.90,+1.84]  D_raw +0.15  aspect +0.90  ash +0.55 clean +0.41  n_ash 1,025 matched 0.95
+  2022->2023   T D +1.54 [-1.26,+2.85]  D_raw +1.37  aspect +1.79  ash -1.45 clean -2.82  n_ash 1,024 matched 0.95
+  2023->2024     D -0.34 [-1.27,+0.98]  D_raw -0.34  aspect -0.24  ash -0.02 clean +0.32  n_ash 1,037 matched 0.95
+  2024->2025     D -0.79 [-4.30,+0.75]  D_raw -0.02  aspect -1.32  ash -0.63 clean -0.62  n_ash 1,037 matched 0.95
+  placebo pairs before eruption: n=10, range -0.56..+1.77
+  --> 2022_Nov T: D +1.54 [-1.26,+2.85]  variants primary +1.54 plane +1.34 trend_gated +1.27 moderate -0.23 bands100 +1.67
+      LODO +1.33..+1.54 (n=5); placebo -0.56..+1.77
+      C1 CI excludes 0: False | C2 sign stable: False | C3 leave-one-out: True | C4 outside placebo: False  ==> NOT DETECTED
+
+===== 2023_PAROXYSM: ash 28,011 clean 86,855
+  2012->2013     D +0.33 [+0.06,+0.76]  D_raw +0.07  aspect +0.43  ash -0.60 clean -0.67  n_ash 27,428 matched 1.00
+  2013->2014     D +0.02 [-0.31,+0.26]  D_raw +0.04  aspect -0.04  ash -0.02 clean -0.06  n_ash 27,575 matched 1.00
+  2014->2015     D -0.32 [-0.63,+0.09]  D_raw -0.09  aspect -0.27  ash -2.05 clean -1.96  n_ash 27,402 matched 1.00
+  2015->2016     D +0.62 [+0.11,+1.10]  D_raw +0.53  aspect +0.41  ash +1.23 clean +0.70  n_ash 27,340 matched 1.00
+  2016->2017     D +0.46 [+0.15,+0.89]  D_raw +0.25  aspect +0.43  ash -0.51 clean -0.76  n_ash 27,317 matched 1.00
+  2017->2018     D +0.40 [+0.06,+0.94]  D_raw +0.10  aspect +0.53  ash -0.61 clean -0.71  n_ash 27,543 matched 1.00
+  2018->2019     D +0.41 [+0.14,+0.86]  D_raw +0.35  aspect +0.06  ash +0.31 clean -0.04  n_ash 27,549 matched 1.00
+  2019->2020     D -0.17 [-0.47,+0.11]  D_raw -0.11  aspect +0.13  ash -0.29 clean -0.18  n_ash 27,553 matched 1.00
+  2020->2021     D -0.29 [-0.54,-0.06]  D_raw -0.37  aspect -0.19  ash +0.29 clean +0.66  n_ash 27,773 matched 1.00
+  2021->2022     D +0.28 [-0.42,+1.33]  D_raw -0.13  aspect -0.73  ash +0.41 clean +0.54  n_ash 27,452 matched 1.00
+  2022->2023     D +0.45 [-0.98,+1.34]  D_raw +0.71  aspect +1.27  ash -2.34 clean -3.06  n_ash 27,445 matched 1.00
+  2023->2024  Y1 D -0.05 [-0.29,+0.21]  D_raw -0.16  aspect -0.10  ash +0.22 clean +0.38  n_ash 27,697 matched 1.00
+  2024->2025  Y2 D +0.10 [-0.73,+1.04]  D_raw -0.08  aspect +0.59  ash -0.62 clean -0.54  n_ash 27,614 matched 1.00
+  placebo pairs before eruption: n=11, range -0.32..+0.62
+  --> 2023_PAROXYSM Y1: D -0.05 [-0.29,+0.21]  variants primary -0.05 plane -0.00 trend_gated -0.05 moderate -0.04 bands100 -0.02
+      LODO -0.17..+0.08 (n=10); placebo -0.32..+0.62
+      C1 CI excludes 0: False | C2 sign stable: True | C3 leave-one-out: False | C4 outside placebo: False  ==> NOT DETECTED
+  --> 2023_PAROXYSM Y2: D +0.10 [-0.73,+1.04]  variants primary +0.10 plane +0.06 trend_gated -0.10 moderate +0.26 bands100 +0.14
+      LODO -0.11..+0.34 (n=9); placebo -0.32..+0.62
+      C1 CI excludes 0: False | C2 sign stable: False | C3 leave-one-out: False | C4 outside placebo: False  ==> NOT DETECTED
+
+2022 mask, two-year pair 2021->2023: D +0.73 [-0.65,+1.74] D_raw +1.24 n_ash 1,034 matched 0.95
+done
